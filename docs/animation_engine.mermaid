@@ -1,0 +1,96 @@
+---
+title: GeoModeler3D — Animation Engine
+---
+classDiagram
+    class AnimationSequence {
+        +Guid Id
+        +string Name
+        +TimeSpan Duration
+        +bool IsLooping
+        +List~IAnimationTrack~ Tracks
+        +AddTrack(IAnimationTrack track) void
+        +RemoveTrack(Guid trackId) void
+        +EvaluateAll(double timeSeconds) void
+    }
+
+    class IAnimationTrack {
+        <<interface>>
+        +Guid Id
+        +Guid TargetEntityId
+        +string PropertyName
+        +SortedList~double-Keyframe~ Keyframes
+        +EasingType DefaultEasing
+        +Evaluate(double timeSeconds) object
+        +AddKeyframe(Keyframe kf) void
+        +RemoveKeyframe(double time) void
+    }
+
+    class Keyframe {
+        +double Time
+        +object Value
+        +EasingType EasingIn
+        +EasingType EasingOut
+    }
+
+    class TranslationTrack {
+        +Evaluate(double t) Vector3
+        -Lerp(Vector3 a, Vector3 b, double t) Vector3
+    }
+
+    class RotationTrack {
+        +Evaluate(double t) Quaternion
+        -Slerp(Quaternion a, Quaternion b, double t) Quaternion
+    }
+
+    class ScalarTrack {
+        +Evaluate(double t) double
+    }
+
+    class CameraTrack {
+        +Evaluate(double t) CameraState
+    }
+
+    class EasingType {
+        <<enumeration>>
+        Linear
+        EaseIn
+        EaseOut
+        EaseInOut
+        CubicBezier
+    }
+
+    class EasingFunctions {
+        <<static>>
+        +Apply(EasingType type, double t) double
+    }
+
+    class AnimationPlayer {
+        +AnimationSequence CurrentSequence
+        +AnimationPlayerState State
+        +double CurrentTime
+        +double SpeedMultiplier
+        +Play() void
+        +Pause() void
+        +Stop() void
+        +Scrub(double time) void
+        +event FrameTick
+    }
+
+    class AnimationPlayerState {
+        <<enumeration>>
+        Stopped
+        Playing
+        Paused
+    }
+
+    AnimationSequence "1" *-- "0..*" IAnimationTrack
+    IAnimationTrack "1" *-- "0..*" Keyframe
+    IAnimationTrack <|.. TranslationTrack
+    IAnimationTrack <|.. RotationTrack
+    IAnimationTrack <|.. ScalarTrack
+    IAnimationTrack <|.. CameraTrack
+    AnimationPlayer --> AnimationSequence
+    AnimationPlayer --> AnimationPlayerState
+    TranslationTrack --> EasingFunctions
+    RotationTrack --> EasingFunctions
+    ScalarTrack --> EasingFunctions

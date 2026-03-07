@@ -1,0 +1,49 @@
+---
+title: GeoModeler3D — High-Level Architecture (Layer Diagram)
+---
+graph TB
+    subgraph "GeoModeler3D.App (WPF Executable)"
+        V[Views — XAML + code-behind]
+        VM[ViewModels — CommunityToolkit.Mvvm]
+    end
+
+    subgraph "GeoModeler3D.Rendering"
+        RA[Rendering Adapter — IEntityRenderer implementations]
+        VP[ViewportManager — HelixViewport3D wrapper]
+        CG[CuttingPlaneGroup — HelixToolkit clipping]
+    end
+
+    subgraph "GeoModeler3D.Core (No UI dependencies)"
+        E[Entities — IGeometricEntity hierarchy]
+        SG[SceneGraph — SceneManager]
+        CMD[Commands — IUndoableCommand]
+        UNDO[UndoManager]
+        SER[Serialization — ProjectSerializer]
+        ANIM[Animation Engine — AnimationSequence + Tracks]
+        CUT[CuttingPlane Logic — ContourExtractor]
+        MATH[Math Utilities — Vector3 Matrix4x4 Quaternion]
+    end
+
+    subgraph "GeoModeler3D.Tests"
+        UT[Unit Tests — xUnit + Moq]
+    end
+
+    V -->|DataBinding| VM
+    VM -->|calls| SG
+    VM -->|calls| CMD
+    VM -->|calls| ANIM
+    VM -->|uses interface| RA
+    RA -->|reads| E
+    RA -->|renders via| VP
+    RA -->|clipping via| CG
+    CUT -->|reads| E
+    CUT -->|uses| MATH
+    SER -->|serializes| E
+    SER -->|serializes| ANIM
+    CMD -->|mutates| SG
+    UNDO -->|manages| CMD
+    ANIM -->|mutates| E
+    UT -->|tests| E
+    UT -->|tests| CMD
+    UT -->|tests| ANIM
+    UT -->|tests| SER

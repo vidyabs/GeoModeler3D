@@ -1,0 +1,18 @@
+---
+title: GeoModeler3D — Animation Player State Machine
+---
+stateDiagram-v2
+    [*] --> Stopped
+
+    Stopped --> Playing : Play()
+    Playing --> Paused : Pause()
+    Paused --> Playing : Play() / resume
+    Playing --> Stopped : Stop() / reset to t=0
+    Paused --> Stopped : Stop() / reset to t=0
+    Playing --> Stopped : reached Duration AND NOT IsLooping
+    Playing --> Playing : reached Duration AND IsLooping / reset to t=0
+
+    state Playing {
+        [*] --> Ticking
+        Ticking --> Ticking : DispatcherTimer fires then advance time then EvaluateAll then raise FrameTick
+    }

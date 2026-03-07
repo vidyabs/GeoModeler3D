@@ -1,0 +1,68 @@
+---
+title: GeoModeler3D — Command and Undo/Redo System
+---
+classDiagram
+    class IUndoableCommand {
+        <<interface>>
+        +string Description
+        +Execute() void
+        +Undo() void
+    }
+
+    class UndoManager {
+        -Stack~IUndoableCommand~ _undoStack
+        -Stack~IUndoableCommand~ _redoStack
+        -int MaxDepth
+        +Execute(IUndoableCommand cmd) void
+        +Undo() void
+        +Redo() void
+        +bool CanUndo
+        +bool CanRedo
+        +event UndoStackChanged
+    }
+
+    class CreateEntityCommand {
+        -SceneManager _scene
+        -IGeometricEntity _entity
+        +Execute() void
+        +Undo() void
+    }
+
+    class DeleteEntityCommand {
+        -SceneManager _scene
+        -IGeometricEntity _entity
+        -int _originalIndex
+        +Execute() void
+        +Undo() void
+    }
+
+    class TransformEntityCommand {
+        -IGeometricEntity _entity
+        -Matrix4x4 _forwardMatrix
+        -Matrix4x4 _inverseMatrix
+        +Execute() void
+        +Undo() void
+    }
+
+    class ChangePropertyCommand~T~ {
+        -IGeometricEntity _entity
+        -string _propertyName
+        -T _oldValue
+        -T _newValue
+        +Execute() void
+        +Undo() void
+    }
+
+    class MacroCommand {
+        -List~IUndoableCommand~ _children
+        +Execute() void
+        +Undo() void
+    }
+
+    IUndoableCommand <|.. CreateEntityCommand
+    IUndoableCommand <|.. DeleteEntityCommand
+    IUndoableCommand <|.. TransformEntityCommand
+    IUndoableCommand <|.. ChangePropertyCommand
+    IUndoableCommand <|.. MacroCommand
+    UndoManager --> IUndoableCommand
+    MacroCommand *-- IUndoableCommand

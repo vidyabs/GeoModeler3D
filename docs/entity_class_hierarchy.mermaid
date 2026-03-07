@@ -1,0 +1,114 @@
+---
+title: GeoModeler3D — Entity Class Hierarchy
+---
+classDiagram
+    class IGeometricEntity {
+        <<interface>>
+        +Guid Id
+        +string Name
+        +Color Color
+        +bool IsVisible
+        +string Layer
+        +BoundingBox3D BoundingBox
+        +Transform(Matrix4x4 matrix) void
+        +Clone() IGeometricEntity
+        +Accept(IEntityVisitor visitor) void
+    }
+
+    class EntityBase {
+        <<abstract>>
+        +Guid Id
+        +string Name
+        +Color Color
+        +bool IsVisible
+        +string Layer
+        #OnPropertyChanged(string propertyName) void
+        +Transform(Matrix4x4 matrix) void*
+        +Clone() IGeometricEntity*
+        +Accept(IEntityVisitor visitor) void*
+        +ComputeBoundingBox() BoundingBox3D*
+    }
+
+    class PointEntity {
+        +Vector3 Position
+    }
+
+    class TriangleEntity {
+        +Vector3 Vertex0
+        +Vector3 Vertex1
+        +Vector3 Vertex2
+        +Vector3 Normal
+        +double Area
+    }
+
+    class CircleEntity {
+        +Vector3 Center
+        +Vector3 Normal
+        +double Radius
+        +int SegmentCount
+    }
+
+    class SphereEntity {
+        +Vector3 Center
+        +double Radius
+    }
+
+    class CylinderEntity {
+        +Vector3 BaseCenter
+        +Vector3 Axis
+        +double Radius
+        +double Height
+    }
+
+    class ConeEntity {
+        +Vector3 BaseCenter
+        +Vector3 Axis
+        +double BaseRadius
+        +double Height
+        +double HalfAngle
+    }
+
+    class TorusEntity {
+        +Vector3 Center
+        +Vector3 Normal
+        +double MajorRadius
+        +double MinorRadius
+    }
+
+    class CuttingPlaneEntity {
+        +Vector3 Origin
+        +Vector3 Normal
+        +double DisplayWidth
+        +double DisplayHeight
+        +double Opacity
+        +List~Guid~ TargetEntityIds
+        +bool IsCappingEnabled
+    }
+
+    class ContourCurveEntity {
+        +List~Vector3~ Points
+        +bool IsClosed
+        +Guid SourcePlaneId
+        +Guid SourceEntityId
+        +ConicSectionType ConicType
+    }
+
+    class ConicSectionType {
+        <<enumeration>>
+        Circle
+        Ellipse
+        Parabola
+        Hyperbola
+    }
+
+    IGeometricEntity <|.. EntityBase
+    EntityBase <|-- PointEntity
+    EntityBase <|-- TriangleEntity
+    EntityBase <|-- CircleEntity
+    EntityBase <|-- SphereEntity
+    EntityBase <|-- CylinderEntity
+    EntityBase <|-- ConeEntity
+    EntityBase <|-- TorusEntity
+    EntityBase <|-- CuttingPlaneEntity
+    EntityBase <|-- ContourCurveEntity
+    ContourCurveEntity --> ConicSectionType
