@@ -106,11 +106,8 @@ public partial class MainWindow : Window
     // Menu: Help
     private void OnAbout(object sender, RoutedEventArgs e)
     {
-        MessageBox.Show(
-            "GeoModeler3D\nVersion 1.0.0\n\nA 3D geometric modeling application.",
-            "About GeoModeler3D",
-            MessageBoxButton.OK,
-            MessageBoxImage.Information);
+        var dialog = new AboutDialog { Owner = this };
+        dialog.ShowDialog();
     }
 
     // Entity list selection -> SelectionManager

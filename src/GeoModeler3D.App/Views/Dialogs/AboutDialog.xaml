@@ -1,0 +1,24 @@
+<Window x:Class="GeoModeler3D.App.Views.Dialogs.AboutDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="About GeoModeler3D" SizeToContent="WidthAndHeight" ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
+    <Border Padding="24" MinWidth="320">
+        <StackPanel>
+            <TextBlock Text="GeoModeler3D" FontSize="22" FontWeight="Bold"
+                       Foreground="#FF2B579A"/>
+            <TextBlock Text="Version 1.0.0" FontSize="13" Foreground="Gray" Margin="0,4,0,12"/>
+            <TextBlock TextWrapping="Wrap" Margin="0,0,0,12">
+                A 3D geometric modeling application for creating, visualizing,
+                and analyzing geometric primitives with animation support.
+            </TextBlock>
+            <TextBlock Text="Built with:" FontWeight="SemiBold" Margin="0,0,0,4"/>
+            <TextBlock Text="  .NET 10 + WPF" Margin="0,1"/>
+            <TextBlock Text="  HelixToolkit.Wpf 3.1.2" Margin="0,1"/>
+            <TextBlock Text="  CommunityToolkit.Mvvm" Margin="0,1"/>
+            <TextBlock Text="  Serilog" Margin="0,1,0,16"/>
+            <Button Content="OK" Width="80" Height="28" HorizontalAlignment="Right"
+                    IsDefault="True" IsCancel="True"/>
+        </StackPanel>
+    </Border>
+</Window>
