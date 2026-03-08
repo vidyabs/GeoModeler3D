@@ -1,41 +1,47 @@
-# Prerequisites
-*.d
+## .NET
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.userprefs
 
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
+## Visual Studio
+.vs/
+*.rsuser
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Bb]uild/
+bld/
 
-# Precompiled Headers
-*.gch
-*.pch
+## NuGet
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+*.nupkg
+**/[Ll]ib/[Nn]et*/
+project.lock.json
+project.fragment.lock.json
+artifacts/
 
-# Linker files
-*.ilk
+## Build results
+[Dd]ebugPublic/
+[Rr]eleases/
+*.[Cc]ache
+!?*.[Cc]ache/
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
 
-# Debugger Files
-*.pdb
+## Rider
+.idea/
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
+## Logs
+logs/
 
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
-*.exe
-*.out
-*.app
-
-# debug information files
-*.dwo
+## OS
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store

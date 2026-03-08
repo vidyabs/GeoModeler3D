@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet restore GeoModeler3D.sln)",
+      "Bash(dotnet nuget search \"HelixToolkit\" --take 20)",
+      "Bash(dotnet build GeoModeler3D.sln)",
+      "Bash(dotnet test GeoModeler3D.sln --verbosity normal)"
+    ]
+  }
+}
