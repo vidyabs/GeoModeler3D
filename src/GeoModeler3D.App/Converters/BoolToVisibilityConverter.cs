@@ -6,12 +6,15 @@ namespace GeoModeler3D.App.Converters;
 
 public class BoolToVisibilityConverter : IValueConverter
 {
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        return value is true ? Visibility.Visible : Visibility.Collapsed;
+        bool isVisible = value is true || (value is not null and not false);
+        bool invert = parameter is string s && s.Equals("Invert", StringComparison.OrdinalIgnoreCase);
+        if (invert) isVisible = !isVisible;
+        return isVisible ? Visibility.Visible : Visibility.Collapsed;
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    public object ConvertBack(object value, Type targetType, object? parameter, CultureInfo culture)
     {
         return value is Visibility.Visible;
     }
