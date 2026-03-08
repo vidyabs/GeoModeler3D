@@ -9,7 +9,8 @@
       "Bash(python3 -c \":*)",
       "Bash(dotnet build)",
       "Bash(dotnet test --verbosity normal)",
-      "Bash(dotnet test --verbosity minimal)"
+      "Bash(dotnet test --verbosity minimal)",
+      "Bash(dotnet build --verbosity quiet)"
     ]
   }
 }
