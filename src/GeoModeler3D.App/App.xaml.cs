@@ -2,6 +2,7 @@ using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using GeoModeler3D.Core.Commands;
 using GeoModeler3D.Core.SceneGraph;
+using GeoModeler3D.Core.Serialization;
 using GeoModeler3D.Rendering;
 using GeoModeler3D.Rendering.EntityRenderers;
 using GeoModeler3D.App.Services;
@@ -55,6 +56,7 @@ public partial class App : Application
         services.AddSingleton<SelectionManager>();
         services.AddSingleton<LayerManager>();
         services.AddSingleton<UndoManager>();
+        services.AddSingleton<ProjectSerializer>();
 
         // Rendering
         services.AddSingleton<EntityRendererRegistry>(sp =>

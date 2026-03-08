@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.Input;
 using GeoModeler3D.Core.Commands;
 using GeoModeler3D.Core.Entities;
 using GeoModeler3D.Core.SceneGraph;
+using GeoModeler3D.Core.Serialization;
 using GeoModeler3D.App.Services;
 
 namespace GeoModeler3D.App.ViewModels;
@@ -15,6 +16,9 @@ public partial class MainViewModel : ObservableObject
     private readonly SelectionManager _selectionManager;
     private readonly UndoManager _undoManager;
     private readonly IDialogService _dialogService;
+    private readonly IFileDialogService _fileDialogService;
+    private readonly ProjectSerializer _projectSerializer;
+    private string? _currentFilePath;
 
     [ObservableProperty]
     private string _statusText = "Ready";
@@ -26,12 +30,16 @@ public partial class MainViewModel : ObservableObject
         SceneManager sceneManager,
         SelectionManager selectionManager,
         UndoManager undoManager,
-        IDialogService dialogService)
+        IDialogService dialogService,
+        IFileDialogService fileDialogService,
+        ProjectSerializer projectSerializer)
     {
         _sceneManager = sceneManager;
         _selectionManager = selectionManager;
         _undoManager = undoManager;
         _dialogService = dialogService;
+        _fileDialogService = fileDialogService;
+        _projectSerializer = projectSerializer;
 
         _undoManager.StackChanged += OnUndoStackChanged;
         _selectionManager.SelectionChanged += OnSelectionChanged;
@@ -62,7 +70,74 @@ public partial class MainViewModel : ObservableObject
         _selectionManager.ClearSelection();
         _sceneManager.Clear();
         _undoManager.Clear();
+        _currentFilePath = null;
+        Title = "GeoModeler3D";
         StatusText = "New scene created";
+    }
+
+    [RelayCommand]
+    private void OpenScene()
+    {
+        var path = _fileDialogService.ShowOpenFileDialog(
+            "GeoModeler3D Files (*.geo3d)|*.geo3d|JSON Files (*.json)|*.json|All Files (*.*)|*.*",
+            "Open Scene");
+        if (path is null) return;
+
+        try
+        {
+            _selectionManager.ClearSelection();
+            _undoManager.Clear();
+            _projectSerializer.Load(_sceneManager, path);
+            _currentFilePath = path;
+            Title = $"GeoModeler3D - {System.IO.Path.GetFileName(path)}";
+            StatusText = $"Opened: {System.IO.Path.GetFileName(path)}";
+        }
+        catch (Exception ex)
+        {
+            _dialogService.ShowMessage($"Failed to open file:\n{ex.Message}", "Open Error");
+        }
+    }
+
+    [RelayCommand]
+    private void SaveScene()
+    {
+        if (_currentFilePath is not null)
+        {
+            try
+            {
+                _projectSerializer.Save(_sceneManager, _currentFilePath);
+                StatusText = $"Saved: {System.IO.Path.GetFileName(_currentFilePath)}";
+            }
+            catch (Exception ex)
+            {
+                _dialogService.ShowMessage($"Failed to save file:\n{ex.Message}", "Save Error");
+            }
+        }
+        else
+        {
+            SaveSceneAs();
+        }
+    }
+
+    [RelayCommand]
+    private void SaveSceneAs()
+    {
+        var path = _fileDialogService.ShowSaveFileDialog(
+            "GeoModeler3D Files (*.geo3d)|*.geo3d|JSON Files (*.json)|*.json",
+            "Save Scene As");
+        if (path is null) return;
+
+        try
+        {
+            _projectSerializer.Save(_sceneManager, path);
+            _currentFilePath = path;
+            Title = $"GeoModeler3D - {System.IO.Path.GetFileName(path)}";
+            StatusText = $"Saved: {System.IO.Path.GetFileName(path)}";
+        }
+        catch (Exception ex)
+        {
+            _dialogService.ShowMessage($"Failed to save file:\n{ex.Message}", "Save Error");
+        }
     }
 
     [RelayCommand(CanExecute = nameof(CanUndo))]

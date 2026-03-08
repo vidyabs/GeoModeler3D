@@ -17,4 +17,21 @@ public readonly record struct EntityColor(byte R, byte G, byte B, byte A = 255)
     public static EntityColor Gray => new(128, 128, 128);
 
     public string ToHex() => $"#{A:X2}{R:X2}{G:X2}{B:X2}";
+
+    public static EntityColor FromHex(string hex)
+    {
+        hex = hex.TrimStart('#');
+        if (hex.Length == 8) // #AARRGGBB
+            return new EntityColor(
+                Convert.ToByte(hex[2..4], 16),
+                Convert.ToByte(hex[4..6], 16),
+                Convert.ToByte(hex[6..8], 16),
+                Convert.ToByte(hex[0..2], 16));
+        if (hex.Length == 6) // #RRGGBB
+            return new EntityColor(
+                Convert.ToByte(hex[0..2], 16),
+                Convert.ToByte(hex[2..4], 16),
+                Convert.ToByte(hex[4..6], 16));
+        return White;
+    }
 }
