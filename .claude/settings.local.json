@@ -4,7 +4,11 @@
       "Bash(dotnet restore GeoModeler3D.sln)",
       "Bash(dotnet nuget search \"HelixToolkit\" --take 20)",
       "Bash(dotnet build GeoModeler3D.sln)",
-      "Bash(dotnet test GeoModeler3D.sln --verbosity normal)"
+      "Bash(dotnet test GeoModeler3D.sln --verbosity normal)",
+      "Bash(dotnet list src/GeoModeler3D.Rendering/GeoModeler3D.Rendering.csproj package)",
+      "Bash(python3 -c \":*)",
+      "Bash(dotnet build)",
+      "Bash(dotnet test --verbosity normal)"
     ]
   }
 }
