@@ -1,0 +1,11 @@
+<UserControl x:Class="GeoModeler3D.App.Views.ViewportView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:h="clr-namespace:HelixToolkit.Wpf;assembly=HelixToolkit.Wpf">
+    <h:HelixViewport3D x:Name="Viewport"
+                       ShowViewCube="True"
+                       ShowCoordinateSystem="True"
+                       ZoomExtentsWhenLoaded="True"
+                       Background="#FF2D2D30">
+    </h:HelixViewport3D>
+</UserControl>
