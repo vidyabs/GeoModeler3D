@@ -1,0 +1,9 @@
+<UserControl x:Class="GeoModeler3D.App.Views.TimelinePanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Height="80">
+    <Grid Background="#FFE8E8E8" Margin="4">
+        <TextBlock Text="Timeline (Coming Soon)" HorizontalAlignment="Center"
+                   VerticalAlignment="Center" Foreground="Gray" FontStyle="Italic"/>
+    </Grid>
+</UserControl>

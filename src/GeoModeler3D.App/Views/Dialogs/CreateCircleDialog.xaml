@@ -1,0 +1,11 @@
+<Window x:Class="GeoModeler3D.App.Views.Dialogs.CreateCircleDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Create Circle" SizeToContent="WidthAndHeight" ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner">
+    <StackPanel Margin="16">
+        <TextBlock Text="Circle creation - Coming Soon" Foreground="Gray" FontStyle="Italic"/>
+        <Button Content="Close" Width="75" Height="28" Margin="0,12,0,0"
+                HorizontalAlignment="Right" IsCancel="True"/>
+    </StackPanel>
+</Window>
