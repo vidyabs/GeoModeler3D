@@ -1,7 +1,6 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.0.31903.59
+# Visual Studio Version 18
+VisualStudioVersion = 18.4.11605.240 stable
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeoModeler3D.Core", "src\GeoModeler3D.Core\GeoModeler3D.Core.csproj", "{A1B2C3D4-1111-1111-1111-111111111111}"
 EndProject
@@ -12,6 +11,22 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeoModeler3D.Tests", "src\GeoModeler3D.Tests\GeoModeler3D.Tests.csproj", "{A1B2C3D4-4444-4444-4444-444444444444}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{E1F2A3B4-5555-5555-5555-555555555555}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{B6F66814-5E5D-4E0E-8B91-B9C8BCD90EDF}"
+	ProjectSection(SolutionItems) = preProject
+		docs\animation_engine.mermaid = docs\animation_engine.mermaid
+		docs\animation_state_machine.mermaid = docs\animation_state_machine.mermaid
+		docs\Architecture.md = docs\Architecture.md
+		docs\command_undo_system.mermaid = docs\command_undo_system.mermaid
+		docs\Demo_Walkthrough.md = docs\Demo_Walkthrough.md
+		docs\Developer_Guide.md = docs\Developer_Guide.md
+		docs\entity_class_hierarchy.mermaid = docs\entity_class_hierarchy.mermaid
+		docs\GeoModeler_prompts.md = docs\GeoModeler_prompts.md
+		docs\high_level_architecture.mermaid = docs\high_level_architecture.mermaid
+		docs\Implementation_Plan.md = docs\Implementation_Plan.md
+		docs\Requirement_Document.md = docs\Requirement_Document.md
+		docs\Technology_Choice.md = docs\Technology_Choice.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,10 +51,16 @@ Global
 		{A1B2C3D4-4444-4444-4444-444444444444}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1B2C3D4-4444-4444-4444-444444444444}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{A1B2C3D4-1111-1111-1111-111111111111} = {E1F2A3B4-5555-5555-5555-555555555555}
 		{A1B2C3D4-2222-2222-2222-222222222222} = {E1F2A3B4-5555-5555-5555-555555555555}
 		{A1B2C3D4-3333-3333-3333-333333333333} = {E1F2A3B4-5555-5555-5555-555555555555}
 		{A1B2C3D4-4444-4444-4444-444444444444} = {E1F2A3B4-5555-5555-5555-555555555555}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AD067241-CD03-43FC-B913-4E8D934D2D4F}
 	EndGlobalSection
 EndGlobal
