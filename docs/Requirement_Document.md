@@ -90,6 +90,8 @@ The primary goals are to deliver a responsive 3D viewport integrated within a st
 
 **FR-28 — Undo/Redo.** All entity creation, deletion, transformation, and property-change operations shall be undoable and redoable through a linear undo stack with a configurable depth (default 50).
 
+**FR-29 — Support edit of properties such as color, geometric values, visibility for any entity, with changes reflected in real time in the viewport.
+
 ### 3.7 Session Persistence
 
 **FR-29 — Save/Load Project.** The application shall save the entire scene state (all entities with their properties, camera position, display settings) to a custom project file format (e.g., `.gm3d`). The file format shall be JSON-based to facilitate debugging, version control diffing, and future schema migration.
