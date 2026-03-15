@@ -221,6 +221,16 @@ public partial class MainViewModel : ObservableObject
         StatusText = $"Created Point";
     }
 
+    [RelayCommand]
+    private void CreateTriangle(TriangleCreationParams? p)
+    {
+        if (p is null) return;
+        var entity = new TriangleEntity(p.V0, p.V1, p.V2);
+        var cmd = new CreateEntityCommand(_sceneManager, entity);
+        _undoManager.Execute(cmd);
+        StatusText = "Created Triangle";
+    }
+
     private void OnUndoStackChanged()
     {
         UndoCommand.NotifyCanExecuteChanged();
@@ -243,3 +253,4 @@ public record CylinderCreationParams(Vector3 BaseCenter, Vector3 Axis, double Ra
 public record ConeCreationParams(Vector3 BaseCenter, Vector3 Axis, double BaseRadius, double Height);
 public record TorusCreationParams(Vector3 Center, Vector3 Normal, double MajorRadius, double MinorRadius);
 public record PointCreationParams(Vector3 Position);
+public record TriangleCreationParams(Vector3 V0, Vector3 V1, Vector3 V2);

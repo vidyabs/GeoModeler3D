@@ -1,8 +1,10 @@
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Media3D;
 using GeoModeler3D.App.ViewModels;
 using GeoModeler3D.App.Views.Dialogs;
+using GeoModeler3D.Core.Entities;
 using GeoModeler3D.Core.SceneGraph;
 using GeoModeler3D.Rendering;
 
@@ -12,6 +14,9 @@ public partial class MainWindow : Window
 {
     private MainViewModel ViewModel => (MainViewModel)DataContext;
     private ViewportManager? _viewportManager;
+
+    // Guard against feedback loops between the entity ListBox and SelectionManager
+    private int _selectionSyncDepth = 0;
 
     public MainWindow()
     {
@@ -26,6 +31,26 @@ public partial class MainWindow : Window
     {
         _viewportManager = viewportManager;
         ViewportControl.Initialize(renderingService, viewportManager, selectionManager);
+
+        // Sync SelectionManager → entity ListBox (e.g. when viewport click changes selection)
+        selectionManager.SelectionChanged += () =>
+        {
+            if (_selectionSyncDepth > 0) return;
+            _selectionSyncDepth++;
+            try
+            {
+                EntityList.SelectedItems.Clear();
+                foreach (var id in selectionManager.SelectedIds)
+                {
+                    var entity = sceneManager.GetById(id);
+                    if (entity != null) EntityList.SelectedItems.Add(entity);
+                }
+            }
+            finally
+            {
+                _selectionSyncDepth--;
+            }
+        };
 
         // Wire SceneManager events to RenderingService
         sceneManager.EntityAdded += entity => renderingService.AddEntity(entity);
@@ -72,6 +97,39 @@ public partial class MainWindow : Window
             ViewModel.CreatePointCommand.Execute(dialog.Result);
     }
 
+    private void OnCreateTriangle(object sender, RoutedEventArgs e)
+    {
+        var sm = ViewModel.SelectionManager;
+        var scene = ViewModel.SceneManager;
+
+        if (sm.SelectedIds.Count != 3)
+        {
+            MessageBox.Show(
+                "Please select exactly 3 point entities to create a triangle.\n\n" +
+                "Hold Ctrl and click entities in the list to multi-select.",
+                "Selection Required", MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+
+        var points = sm.SelectedIds
+            .Select(id => scene.GetById(id))
+            .OfType<PointEntity>()
+            .ToList();
+
+        if (points.Count != 3)
+        {
+            MessageBox.Show(
+                "All 3 selected entities must be Point entities.\n\n" +
+                $"Currently selected: {string.Join(", ", sm.SelectedIds.Select(id => scene.GetById(id)?.GetType().Name.Replace("Entity", "") ?? "?"))}.",
+                "Invalid Selection", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        var dialog = new CreateTriangleDialog(points[0], points[1], points[2]) { Owner = this };
+        if (dialog.ShowDialog() == true)
+            ViewModel.CreateTriangleCommand.Execute(dialog.Result);
+    }
+
     // Menu: View
     private void OnZoomToFit(object sender, RoutedEventArgs e) => _viewportManager?.ZoomToFit();
 
@@ -110,14 +168,23 @@ public partial class MainWindow : Window
         dialog.ShowDialog();
     }
 
-    // Entity list selection -> SelectionManager
+    // Entity list selection → SelectionManager
     private void OnEntityListSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (EntityList.SelectedItem is Core.Entities.IGeometricEntity entity)
+        if (_selectionSyncDepth > 0) return;
+        _selectionSyncDepth++;
+        try
         {
             var sm = ViewModel.SelectionManager;
-            if (!sm.IsSelected(entity.Id))
-                sm.Select(entity.Id);
+            // Only process the delta to avoid re-entrancy side-effects
+            foreach (IGeometricEntity entity in e.RemovedItems.OfType<IGeometricEntity>())
+                if (sm.IsSelected(entity.Id)) sm.ToggleSelect(entity.Id);
+            foreach (IGeometricEntity entity in e.AddedItems.OfType<IGeometricEntity>())
+                if (!sm.IsSelected(entity.Id)) sm.AddToSelection(entity.Id);
+        }
+        finally
+        {
+            _selectionSyncDepth--;
         }
     }
 }

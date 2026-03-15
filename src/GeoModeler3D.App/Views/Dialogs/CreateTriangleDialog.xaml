@@ -1,11 +1,29 @@
 <Window x:Class="GeoModeler3D.App.Views.Dialogs.CreateTriangleDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Create Triangle" SizeToContent="WidthAndHeight" ResizeMode="NoResize"
+        Title="Create Triangle from Points" SizeToContent="WidthAndHeight" ResizeMode="NoResize"
         WindowStartupLocation="CenterOwner">
-    <StackPanel Margin="16">
-        <TextBlock Text="Triangle creation - Coming Soon" Foreground="Gray" FontStyle="Italic"/>
-        <Button Content="Close" Width="75" Height="28" Margin="0,12,0,0"
-                HorizontalAlignment="Right" IsCancel="True"/>
+    <StackPanel Margin="16" Width="340">
+        <TextBlock Text="Creating triangle from the 3 selected points:"
+                   Margin="0,0,0,12" FontWeight="SemiBold"/>
+
+        <!-- Point 1 -->
+        <TextBlock Text="Point 1" Foreground="#FF555555" FontSize="11"/>
+        <TextBlock x:Name="Point0Info" Margin="0,2,0,10" FontFamily="Consolas"/>
+
+        <!-- Point 2 -->
+        <TextBlock Text="Point 2" Foreground="#FF555555" FontSize="11"/>
+        <TextBlock x:Name="Point1Info" Margin="0,2,0,10" FontFamily="Consolas"/>
+
+        <!-- Point 3 -->
+        <TextBlock Text="Point 3" Foreground="#FF555555" FontSize="11"/>
+        <TextBlock x:Name="Point2Info" Margin="0,2,0,16" FontFamily="Consolas"/>
+
+        <Separator Margin="0,0,0,12"/>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="Create" Width="75" Height="28" Margin="0,0,8,0" IsDefault="True" Click="OnCreate"/>
+            <Button Content="Cancel" Width="75" Height="28" IsCancel="True"/>
+        </StackPanel>
     </StackPanel>
 </Window>

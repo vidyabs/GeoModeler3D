@@ -183,10 +183,13 @@ Tracks which entities are currently selected. It stores a list of `Guid`s (entit
 |---|---|
 | `Select(id)` | Clears selection, selects only this entity |
 | `ToggleSelect(id)` | Adds if not selected, removes if selected |
-| `AddToSelection(id)` | Adds to existing selection |
+| `AddToSelection(id)` | Adds to existing selection without clearing it |
+| `IsSelected(id)` | Returns true if the entity is currently selected |
 | `ClearSelection()` | Deselects everything |
 
 The `SelectionChanged` event notifies the UI and rendering layer to update highlights.
+
+**Multi-selection sync between the entity list and SelectionManager:** The entity ListBox in MainWindow uses `SelectionMode="Extended"`. The `OnEntityListSelectionChanged` handler processes only the delta (`e.AddedItems`/`e.RemovedItems`) and guards against re-entrancy using a depth counter (`_selectionSyncDepth`). A separate subscription in `InitializeServices` propagates `SelectionManager.SelectionChanged` back to the ListBox's `SelectedItems` collection so that viewport clicks also highlight the corresponding rows.
 
 ### 4.4 Data Flow: Creating an Entity
 
@@ -226,7 +229,69 @@ RenderingService.AddEntity(entity)
 Sphere appears on screen!
 ```
 
-### 4.5 Data Flow: Property Change
+### 4.5 Data Flow: Triangle from Selected Points
+
+```
+User Ctrl+clicks 3 PointEntities in the entity list
+  |
+  v
+OnEntityListSelectionChanged() -> SelectionManager.AddToSelection(id) x3
+  |
+  v
+User clicks Create > Triangle from 3 Points...
+  |
+  v
+MainWindow.OnCreateTriangle()
+  | validates: SelectedIds.Count == 3 AND all are PointEntity
+  | if not: MessageBox error, return
+  v
+new CreateTriangleDialog(p0, p1, p2).ShowDialog()
+  | dialog shows point names and coordinates
+  | OnCreate: validates distinct positions + non-collinear cross-product
+  | if invalid: MessageBox warning, dialog stays open
+  | if valid: Result = TriangleCreationParams(v0, v1, v2), DialogResult = true
+  v
+ViewModel.CreateTriangleCommand.Execute(params)
+  | creates TriangleEntity(v0, v1, v2) + CreateEntityCommand
+  v
+UndoManager.Execute(cmd) -> SceneManager.Add(entity)
+  -> EntityAdded -> RenderingService.AddEntity -> TriangleEntityRenderer.CreateVisual
+  -> Triangle appears on screen
+```
+
+### 4.6 Data Flow: Property Edit via Properties Panel
+
+```
+User edits a TextBox in the Properties panel (e.g., changes Radius from 1 to 2)
+  |
+  v
+User presses Enter or moves focus -> OnEditLostFocus / OnEditKeyDown fires
+  |
+  v
+PropertiesPanel code-behind reads Tag="Radius" and TextBox.Text="2"
+  | calls PropertiesPanelViewModel.CommitEdit("Radius", "2")
+  v
+CommitEdit()
+  | resolves property via reflection -> type is double
+  | reads old value: entity.Radius = 1.0
+  | parses new value: 2.0
+  | values differ -> new ChangePropertyCommand<double>(entity, "Radius", 1.0, 2.0)
+  v
+UndoManager.Execute(cmd)
+  | cmd.Execute() -> entity.Radius = 2.0 (via reflection)
+  | entity.PropertyChanged fires -> SceneManager.EntityChanged -> RenderingService.UpdateEntity
+  -> Visual3D updates on screen
+  |
+  v  (if user presses Ctrl+Z)
+UndoManager.Undo()
+  | cmd.Undo() -> entity.Radius = 1.0 (via reflection)
+  -> Visual3D reverts on screen
+```
+
+For a Vector3 component edit (e.g., Tag="Center.X"):
+- `CommitEdit` splits the path on `.`, reads the current `Vector3` via reflection, replaces the named component (X/Y/Z), and executes `ChangePropertyCommand<Vector3>` with the full reconstructed vector.
+
+### 4.7 Data Flow: Property Change
 
 When an entity property changes (e.g., setting Radius):
 
@@ -364,8 +429,10 @@ Redo Stack:  [CreateCone]  <- top (populated after undo)
 | `CreateEntityCommand` | `scene.Add(entity)` | `scene.Remove(entity.Id)` |
 | `DeleteEntityCommand` | `scene.Remove(entity.Id)` | `scene.Insert(originalIndex, entity)` |
 | `TransformEntityCommand` | `entity.Transform(matrix)` | `entity.Transform(inverseMatrix)` |
-| `ChangePropertyCommand` | Sets property via reflection | Restores old value via reflection |
+| `ChangePropertyCommand<T>` | Sets property via reflection to `_newValue` | Restores `_oldValue` via reflection |
 | `MacroCommand` | Executes children in order | Undoes children in reverse order |
+
+`ChangePropertyCommand<T>` is fully generic and uses `System.Reflection.PropertyInfo.SetValue()`. It is used by `PropertiesPanelViewModel.CommitEdit()` for all property panel edits. The caller captures the old value before setting the new one so that Undo can restore it accurately.
 
 ---
 

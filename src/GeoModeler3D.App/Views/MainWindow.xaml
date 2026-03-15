@@ -45,6 +45,8 @@
                 <MenuItem Header="C_one..." Click="OnCreateCone"/>
                 <MenuItem Header="_Torus..." Click="OnCreateTorus"/>
                 <MenuItem Header="_Point..." Click="OnCreatePoint"/>
+                <Separator/>
+                <MenuItem Header="_Triangle from 3 Points..." Click="OnCreateTriangle"/>
             </MenuItem>
             <MenuItem Header="_View">
                 <MenuItem Header="Zoom to _Fit" Click="OnZoomToFit"/>
@@ -90,7 +92,7 @@
                            Margin="8,6" Foreground="#FF333333"/>
                 <ListBox x:Name="EntityList"
                          ItemsSource="{Binding Entities}"
-                         SelectedItem="{Binding SelectedEntity, Mode=OneWay}"
+                         SelectionMode="Extended"
                          SelectionChanged="OnEntityListSelectionChanged"
                          BorderThickness="0" Background="Transparent"
                          Margin="4,0">

@@ -1,10 +1,11 @@
 # Requirements Document — 3D Geometry Modeler
 
-**Project Name:** GeoModeler3D  
-**Version:** 1.1  
-**Date:** March 2026  
-**Status:** Draft  
+**Project Name:** GeoModeler3D
+**Version:** 1.2
+**Date:** March 2026
+**Status:** Draft
 **Change Log:** v1.1 — Added Section 3.8 (Animation and Cutting Planes), updated menu bar (FR-02), expanded data model, added workflows D/E/F, added animation NFRs, updated risks and glossary.
+v1.2 — Added FR-22a (Triangle from multi-selected points), FR-29a (Property panel inline editing), updated FR-08 (entity list multi-select), added Workflow G (triangle creation from points).
 
 ---
 
@@ -40,7 +41,7 @@ The primary goals are to deliver a responsive 3D viewport integrated within a st
 
 **FR-07 — Visual Aids.** The viewport shall optionally display a ground-plane grid, a coordinate-axes triad, and a bounding box around selected entities.
 
-**FR-08 — Selection.** The user shall be able to click on an entity to select it (highlighted in a distinct color), shift-click to add to the selection, and draw a rectangular marquee to select multiple entities.
+**FR-08 — Selection.** The user shall be able to click on an entity to select it (highlighted in a distinct color), shift-click in the viewport to toggle-select, and draw a rectangular marquee to select multiple entities. In the entity list panel, Ctrl+click or Shift+click shall add or range-select entities (standard extended-selection behavior). The entity list and the viewport selection state shall remain synchronized in both directions.
 
 **FR-09 — Rendering Modes.** The viewport shall support at minimum wireframe, shaded (flat and smooth), and shaded-with-edges display modes, toggled via the View menu or toolbar.
 
@@ -76,6 +77,8 @@ The primary goals are to deliver a responsive 3D viewport integrated within a st
 
 **FR-22 — Creation via Console (Future).** The architecture shall accommodate a command-line/script console for programmatic entity creation in a future release.
 
+**FR-22a — Triangle from Selected Points.** The user shall be able to create a `TriangleEntity` from exactly three existing `PointEntity` objects that are currently multi-selected. The workflow is: (1) select three point entities using Ctrl+click in the entity list or Shift+click in the viewport; (2) invoke **Create > Triangle from 3 Points…**; (3) a confirmation dialog shall display the name and coordinates of each selected point; (4) clicking **Create** shall validate that the points are non-collinear (cross-product magnitude ≥ 1×10⁻⁶) and distinct; (5) if validation fails the dialog shall display a descriptive error message and remain open; (6) on success, the triangle entity shall be added to the scene and the operation shall be undoable. If the selection does not contain exactly three `PointEntity` objects when the menu item is invoked, the application shall display an informational message box describing the requirement without opening the dialog.
+
 ### 3.6 Operations
 
 **FR-23 — Transform Operations.** The user shall be able to translate, rotate (about an arbitrary axis), scale (uniform and non-uniform), and mirror selected entities. Transforms shall be specified numerically via a dialog or interactively via gizmo handles in the viewport.
@@ -90,7 +93,7 @@ The primary goals are to deliver a responsive 3D viewport integrated within a st
 
 **FR-28 — Undo/Redo.** All entity creation, deletion, transformation, and property-change operations shall be undoable and redoable through a linear undo stack with a configurable depth (default 50).
 
-**FR-29 — Support edit of properties such as color, geometric values, visibility for any entity, with changes reflected in real time in the viewport.
+**FR-29a — Properties Panel Inline Editing.** The properties panel shall allow the user to edit any geometric property of the selected entity (e.g., center coordinates, radius, height, vertex positions, name, layer, color) directly in the panel without opening a separate dialog. Edits shall be committed on focus-loss or Enter key. Each committed edit shall be recorded as a `ChangePropertyCommand` on the undo stack so that it is reversible with Ctrl+Z. Invalid input (non-numeric text for numeric fields) shall be silently discarded and the field shall revert to the current entity value. Read-only computed properties (e.g., HalfAngle, Normal, Area) shall be displayed but not editable.
 
 ### 3.7 Session Persistence
 
@@ -279,6 +282,8 @@ AnimationModel
 **Workflow E — Animated Cutting-Plane Sweep.** User creates a torus → creates a cutting plane → opens Animation > New Animation → adds a translation track that moves the plane along the torus axis from one end to the other over 10 seconds → adds a rotation track that tilts the plane 45° mid-way → presses Play → watches the cross-section evolve in real time → exports animation as MP4 video.
 
 **Workflow F — Interactive Teaching Demo.** User creates a sphere and a cone side by side → creates two cutting planes, one for each → binds each plane's offset to a slider → opens a second slider bound to the cone's cutting-plane rotation angle → drags sliders to explore how the cross-section shape changes → captures key frames as screenshots for a presentation.
+
+**Workflow G — Triangle from Existing Points.** User creates three `PointEntity` objects at known positions (e.g., (1,0,0), (0,1,0), (0,0,1)) → Ctrl+clicks all three in the entity list to multi-select → clicks **Create > Triangle from 3 Points…** → confirms the confirmation dialog showing each point's name and coordinates → triangle appears in the viewport → selects the triangle → edits a vertex coordinate in the Properties panel to fine-tune the geometry → Ctrl+Z to undo the vertex edit if needed.
 
 ---
 
