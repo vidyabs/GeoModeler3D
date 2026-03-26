@@ -83,6 +83,15 @@ public class EntitySerializationVisitor : IEntityVisitor
         Result["minorRadius"] = entity.MinorRadius;
     }
 
+    public void Visit(MeshEntity entity)
+    {
+        SetCommon(entity, "Mesh");
+        // Serialize as flat float array [x0,y0,z0, x1,y1,z1, ...]
+        Result["positions"] = entity.Positions
+            .SelectMany(v => new[] { v.X, v.Y, v.Z })
+            .ToList();
+    }
+
     public void Visit(CuttingPlaneEntity entity)
     {
         SetCommon(entity, "CuttingPlane");

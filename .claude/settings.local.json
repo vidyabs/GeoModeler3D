@@ -12,7 +12,8 @@
       "Bash(dotnet test --verbosity minimal)",
       "Bash(dotnet build --verbosity quiet)",
       "Bash(dotnet build:*)",
-      "Bash(grep -r \"ToggleSelect\\\\|AddToSelection\" /e/Code/GeoModeler3D/src --include=*.cs)"
+      "Bash(grep -r \"ToggleSelect\\\\|AddToSelection\" /e/Code/GeoModeler3D/src --include=*.cs)",
+      "Bash(dotnet test:*)"
     ]
   }
 }

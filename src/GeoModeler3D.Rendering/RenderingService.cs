@@ -35,6 +35,8 @@ public class RenderingService : IRenderingService
 
         var renderer = _rendererRegistry.GetRenderer(entity.GetType());
         var visual = renderer.CreateVisual(entity);
+        if (!entity.IsVisible && visual is ModelVisual3D hiddenMv)
+            hiddenMv.Content = null;
 
         _entityVisuals[entity.Id] = visual;
         _visualToEntity[visual] = entity.Id;
@@ -45,6 +47,13 @@ public class RenderingService : IRenderingService
     {
         if (!_entityVisuals.TryGetValue(entity.Id, out var visual)) return;
         if (!_rendererRegistry.HasRenderer(entity.GetType())) return;
+
+        // Handle visibility: ModelVisual3D has no Visibility property, so null the Content to hide.
+        if (!entity.IsVisible)
+        {
+            if (visual is ModelVisual3D mv) mv.Content = null;
+            return;
+        }
 
         var renderer = _rendererRegistry.GetRenderer(entity.GetType());
         renderer.UpdateVisual(entity, visual);

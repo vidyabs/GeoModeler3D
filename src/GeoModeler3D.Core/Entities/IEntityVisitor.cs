@@ -9,6 +9,7 @@ public interface IEntityVisitor
     void Visit(CylinderEntity entity);
     void Visit(ConeEntity entity);
     void Visit(TorusEntity entity);
+    void Visit(MeshEntity entity);
     void Visit(CuttingPlaneEntity entity);
     void Visit(ContourCurveEntity entity);
 }

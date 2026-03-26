@@ -19,6 +19,7 @@
         <KeyBinding Gesture="Ctrl+Z" Command="{Binding UndoCommand}"/>
         <KeyBinding Gesture="Ctrl+Y" Command="{Binding RedoCommand}"/>
         <KeyBinding Key="Delete" Command="{Binding DeleteSelectedCommand}"/>
+        <KeyBinding Gesture="Ctrl+I" Command="{Binding ImportMeshCommand}"/>
     </Window.InputBindings>
 
     <DockPanel>
@@ -27,6 +28,7 @@
             <MenuItem Header="_File">
                 <MenuItem Header="_New" Command="{Binding NewSceneCommand}" InputGestureText="Ctrl+N"/>
                 <MenuItem Header="_Open..." Command="{Binding OpenSceneCommand}" InputGestureText="Ctrl+O"/>
+                <MenuItem Header="Import _Mesh..." Command="{Binding ImportMeshCommand}" InputGestureText="Ctrl+I"/>
                 <Separator/>
                 <MenuItem Header="_Save" Command="{Binding SaveSceneCommand}" InputGestureText="Ctrl+S"/>
                 <MenuItem Header="Save _As..." Command="{Binding SaveSceneAsCommand}" InputGestureText="Ctrl+Shift+S"/>

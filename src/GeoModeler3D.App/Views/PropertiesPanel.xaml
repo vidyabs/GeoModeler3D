@@ -299,6 +299,17 @@
             </StackPanel>
         </DataTemplate>
 
+        <!-- Mesh (imported) -->
+        <DataTemplate DataType="{x:Type entities:MeshEntity}">
+            <StackPanel>
+                <TextBlock Text="Mesh Statistics" Style="{StaticResource SectionHeader}"/>
+                <Grid Margin="0,2"><Grid.ColumnDefinitions><ColumnDefinition Width="90"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <TextBlock Text="Triangles" Style="{StaticResource PropLabel}"/>
+                    <TextBlock Grid.Column="1" Text="{Binding TriangleCount}" Style="{StaticResource PropValue}"/>
+                </Grid>
+            </StackPanel>
+        </DataTemplate>
+
         <!-- Torus -->
         <DataTemplate DataType="{x:Type entities:TorusEntity}">
             <StackPanel>

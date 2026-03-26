@@ -1,9 +1,11 @@
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Numerics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using GeoModeler3D.Core.Commands;
 using GeoModeler3D.Core.Entities;
+using GeoModeler3D.Core.Import;
 using GeoModeler3D.Core.SceneGraph;
 using GeoModeler3D.Core.Serialization;
 using GeoModeler3D.App.Services;
@@ -229,6 +231,75 @@ public partial class MainViewModel : ObservableObject
         var cmd = new CreateEntityCommand(_sceneManager, entity);
         _undoManager.Execute(cmd);
         StatusText = "Created Triangle";
+    }
+
+    [RelayCommand]
+    private void ImportMesh()
+    {
+        const string filter =
+            "All Mesh Files (*.stl;*.obj;*.wrl)|*.stl;*.obj;*.wrl" +
+            "|STL Files (*.stl)|*.stl" +
+            "|OBJ Files (*.obj)|*.obj" +
+            "|VRML Files (*.wrl)|*.wrl";
+
+        var path = _fileDialogService.ShowOpenFileDialog(filter, "Import Mesh");
+        if (path is null) return;
+
+        IFileImporter importer;
+        try
+        {
+            importer = Path.GetExtension(path).ToLowerInvariant() switch
+            {
+                ".stl" => new StlImporter(),
+                ".obj" => new ObjImporter(),
+                ".wrl" => new WrlImporter(),
+                var ext => throw new NotSupportedException($"Format '{ext}' is not supported.")
+            };
+        }
+        catch (Exception ex)
+        {
+            _dialogService.ShowMessage(ex.Message, "Import Error");
+            return;
+        }
+
+        var validation = importer.Validate(path);
+        if (!validation.IsValid)
+        {
+            _dialogService.ShowMessage(
+                $"Cannot import file:\n{validation.ErrorMessage}", "Import Error");
+            return;
+        }
+
+        IReadOnlyList<IGeometricEntity> entities;
+        try
+        {
+            entities = importer.Import(path);
+        }
+        catch (Exception ex)
+        {
+            _dialogService.ShowMessage($"Import failed:\n{ex.Message}", "Import Error");
+            return;
+        }
+
+        if (entities.Count == 0)
+        {
+            _dialogService.ShowMessage("No triangles found in the file.", "Import Result");
+            return;
+        }
+
+        // Combine all triangles into a single MeshEntity named after the file
+        string meshName = Path.GetFileNameWithoutExtension(path);
+        var positions = entities
+            .OfType<TriangleEntity>()
+            .SelectMany(t => new[] { t.Vertex0, t.Vertex1, t.Vertex2 })
+            .ToArray();
+
+        var meshEntity = new MeshEntity(positions, meshName);
+        var cmd = new CreateEntityCommand(_sceneManager, meshEntity);
+        _undoManager.Execute(cmd);
+
+        string fileName = Path.GetFileName(path);
+        StatusText = $"Imported {meshEntity.TriangleCount} triangles from {fileName}";
     }
 
     private void OnUndoStackChanged()

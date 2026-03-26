@@ -76,6 +76,7 @@ public class ProjectSerializer
             "Cylinder" => DeserializeCylinder(elem),
             "Cone" => DeserializeCone(elem),
             "Torus" => DeserializeTorus(elem),
+            "Mesh" => DeserializeMesh(elem),
             "CuttingPlane" => DeserializeCuttingPlane(elem),
             "ContourCurve" => DeserializeContourCurve(elem),
             _ => null
@@ -142,6 +143,20 @@ public class ProjectSerializer
             ReadVec3(e.GetProperty("normal")),
             e.GetProperty("majorRadius").GetDouble(),
             e.GetProperty("minorRadius").GetDouble());
+
+    private static MeshEntity DeserializeMesh(JsonElement e)
+    {
+        var posArray = e.GetProperty("positions");
+        var floats = new List<float>();
+        foreach (var f in posArray.EnumerateArray())
+            floats.Add(f.GetSingle());
+
+        var positions = new Vector3[floats.Count / 3];
+        for (int i = 0; i < positions.Length; i++)
+            positions[i] = new Vector3(floats[i * 3], floats[i * 3 + 1], floats[i * 3 + 2]);
+
+        return new MeshEntity(positions);
+    }
 
     private static CuttingPlaneEntity DeserializeCuttingPlane(JsonElement e)
     {

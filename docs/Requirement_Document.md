@@ -1,11 +1,12 @@
 # Requirements Document — 3D Geometry Modeler
 
 **Project Name:** GeoModeler3D
-**Version:** 1.2
+**Version:** 1.3
 **Date:** March 2026
 **Status:** Draft
 **Change Log:** v1.1 — Added Section 3.8 (Animation and Cutting Planes), updated menu bar (FR-02), expanded data model, added workflows D/E/F, added animation NFRs, updated risks and glossary.
 v1.2 — Added FR-22a (Triangle from multi-selected points), FR-29a (Property panel inline editing), updated FR-08 (entity list multi-select), added Workflow G (triangle creation from points).
+v1.3 — Updated FR-19 (added VRML/WRL format), added FR-19a (MeshEntity aggregation — one entity per import file), added MeshEntity to Section 5 data model, added Workflow H (mesh file import), added glossary entries for MeshEntity and VRML.
 
 ---
 
@@ -67,7 +68,9 @@ The primary goals are to deliver a responsive 3D viewport integrated within a st
 
 **FR-18 — Point Cloud Import.** The application shall import point data from plain-text files (CSV, TXT, XYZ) where each line contains at minimum X, Y, Z coordinates separated by a delimiter (comma, space, or tab). Optional columns for R, G, B color shall be recognized.
 
-**FR-19 — Triangle Mesh Import.** The application shall import triangle meshes from STL (ASCII and binary), OBJ, and PLY file formats. Imported meshes shall be converted into the internal triangle-based entity representation.
+**FR-19 — Triangle Mesh Import.** The application shall import triangle meshes from STL (ASCII and binary), OBJ, and VRML 2.0 (.wrl) file formats. The File > Import Mesh menu item (keyboard shortcut Ctrl+I) shall open a single file dialog with a combined filter covering all supported formats. Each imported file shall be converted into a single `MeshEntity` as described in FR-19a.
+
+**FR-19a — Single MeshEntity per Import.** Each mesh file import shall produce exactly one `MeshEntity` in the scene, named after the source file (without extension). The entity stores all imported triangles as a flat `Vector3[]` positions array (every three consecutive elements form one triangle). This ensures large meshes with thousands of triangles do not flood the entity list. The import operation shall be undoable as a single undo step (Ctrl+Z removes the entire mesh).
 
 **FR-20 — Import Validation.** On import, the application shall validate file integrity, report parsing errors with line numbers, and allow the user to skip malformed records or abort.
 
@@ -218,6 +221,10 @@ IGeometricEntity (interface)
 ├── ConeEntity : IGeometricEntity
 │     └── BaseCenter, Axis, BaseRadius, Height
 │
+├── MeshEntity : IGeometricEntity
+│     └── Positions : IReadOnlyList<Vector3>  ← flat array; every 3 entries = one triangle
+│     └── TriangleCount : int (computed)
+│
 ├── CuttingPlaneEntity : IGeometricEntity
 │     └── Origin : Vector3
 │     └── Normal : Vector3
@@ -285,6 +292,8 @@ AnimationModel
 
 **Workflow G — Triangle from Existing Points.** User creates three `PointEntity` objects at known positions (e.g., (1,0,0), (0,1,0), (0,0,1)) → Ctrl+clicks all three in the entity list to multi-select → clicks **Create > Triangle from 3 Points…** → confirms the confirmation dialog showing each point's name and coordinates → triangle appears in the viewport → selects the triangle → edits a vertex coordinate in the Properties panel to fine-tune the geometry → Ctrl+Z to undo the vertex edit if needed.
 
+**Workflow H — Mesh File Import.** User opens a project → **File > Import Mesh…** (or Ctrl+I) → file dialog opens filtered to `*.stl;*.obj;*.wrl` → user selects a binary STL file of a mechanical part → application validates the file (checks binary size formula) → parses all triangles → creates one `MeshEntity` named after the file (e.g., "bracket") → entity appears in the entity list as a single item and renders in the viewport → Properties panel shows the triangle count as a read-only field → user toggles visibility via the checkbox to hide/show the mesh → Ctrl+Z removes the entire mesh in one undo step → Ctrl+Y re-adds it.
+
 ---
 
 ## 7. Constraints and Assumptions
@@ -320,3 +329,5 @@ The main risks are: performance degradation when rendering very large imported m
 | Easing | A function controlling the acceleration curve between keyframes (linear, ease-in, etc.) |
 | Capping | Filling the open face created by a planar cut with a triangulated surface to produce a closed solid |
 | Ear Clipping | A polygon triangulation algorithm used to mesh planar contours for cross-section capping |
+| MeshEntity | An entity that stores a triangulated mesh as a flat `Vector3[]` positions array; created by importing an STL, OBJ, or WRL file; represented as a single item in the entity list regardless of triangle count |
+| VRML / WRL | Virtual Reality Modeling Language 2.0 — an open text-based 3D scene format; files use the `.wrl` extension; the application reads `IndexedFaceSet` nodes to extract triangulated geometry |

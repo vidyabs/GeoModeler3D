@@ -1,10 +1,11 @@
 # Architecture Document — GeoModeler3D
 
 **Project Name:** GeoModeler3D  
-**Version:** 1.1  
-**Date:** March 2026  
-**Status:** Draft  
+**Version:** 1.2
+**Date:** March 2026
+**Status:** Draft
 **Audience:** AI coding assistants, developers, and architects. This document is structured for machine-parseable consumption with explicit naming conventions, dependency rules, and interface contracts.
+**Change Log:** v1.2 — Added `MeshEntity`, `WrlImporter`, `MeshEntityRenderer`; updated folder structure, class diagram, `IEntityVisitor`, serialization schema, DI setup, import data flow, and visibility handling pattern.
 
 ---
 
@@ -113,6 +114,7 @@ GeoModeler3D/
 │   │   │   ├── TorusEntity.cs
 │   │   │   ├── CuttingPlaneEntity.cs
 │   │   │   ├── ContourCurveEntity.cs
+│   │   │   ├── MeshEntity.cs                     ← flat Vector3[] positions; every 3 = one triangle
 │   │   │   └── ConicSectionType.cs               ← enum: Circle, Ellipse, Parabola, Hyperbola
 │   │   ├── SceneGraph/
 │   │   │   ├── SceneManager.cs                   ← owns ObservableCollection<IGeometricEntity>
@@ -154,8 +156,9 @@ GeoModeler3D/
 │   │   ├── Import/
 │   │   │   ├── IFileImporter.cs
 │   │   │   ├── CsvPointCloudImporter.cs
-│   │   │   ├── StlImporter.cs
-│   │   │   ├── ObjImporter.cs
+│   │   │   ├── StlImporter.cs                    ← ASCII + binary STL; no NuGet; pure BinaryReader/StreamReader
+│   │   │   ├── ObjImporter.cs                    ← v/f lines; fan-triangulates N-gons; handles i/t/n syntax
+│   │   │   ├── WrlImporter.cs                    ← VRML 2.0; IndexedFaceSet blocks; fan-triangulates faces
 │   │   │   ├── PlyImporter.cs
 │   │   │   └── ImportValidationResult.cs
 │   │   ├── Export/
@@ -185,6 +188,7 @@ GeoModeler3D/
 │   │   │   ├── TorusEntityRenderer.cs
 │   │   │   ├── CuttingPlaneEntityRenderer.cs
 │   │   │   ├── ContourCurveEntityRenderer.cs
+│   │   │   ├── MeshEntityRenderer.cs             ← builds one MeshGeometry3D for the whole mesh; double-sided
 │   │   │   └── EntityRendererRegistry.cs         ← maps entity Type → IEntityRenderer
 │   │   ├── SelectionHighlighter.cs               ← manages highlight materials
 │   │   ├── GizmoManager.cs                       ← translate/rotate/scale gizmos
@@ -395,6 +399,13 @@ classDiagram
         +Clone() IGeometricEntity
     }
 
+    class MeshEntity {
+        +IReadOnlyList~Vector3~ Positions
+        +int TriangleCount ← computed (Positions.Count / 3)
+        +Transform(Matrix4x4 matrix) void
+        +Clone() IGeometricEntity
+    }
+
     class ConicSectionType {
         <<enumeration>>
         Circle
@@ -413,6 +424,7 @@ classDiagram
     EntityBase <|-- TorusEntity
     EntityBase <|-- CuttingPlaneEntity
     EntityBase <|-- ContourCurveEntity
+    EntityBase <|-- MeshEntity
     ContourCurveEntity --> ConicSectionType
 ```
 
@@ -848,6 +860,46 @@ public class SphereEntityRenderer : IEntityRenderer
 }
 ```
 
+### 7.4 Visibility Handling Pattern
+
+`Visual3D` (the WPF 3D base class) does **not** expose a `Visibility` dependency property like `UIElement` does. Hiding a `ModelVisual3D` requires nulling its `Content`:
+
+```csharp
+// RenderingService.UpdateEntity — hide/show pattern
+if (!entity.IsVisible)
+{
+    if (visual is ModelVisual3D mv) mv.Content = null;  // hides without removing from tree
+    return;
+}
+// Show: rebuild the visual from the current entity state
+renderer.UpdateVisual(entity, visual);
+```
+
+`AddEntity` applies the same check immediately after `CreateVisual` so that entities loaded from a project file that were saved with `isVisible: false` start hidden:
+
+```csharp
+var visual = renderer.CreateVisual(entity);
+if (!entity.IsVisible && visual is ModelVisual3D hiddenMv)
+    hiddenMv.Content = null;
+```
+
+### 7.5 MeshEntityRenderer
+
+`MeshEntityRenderer` converts a `MeshEntity` into a single `MeshGeometry3D` containing all imported triangles. Both winding orders are added per triangle (front-face and back-face indices) so the mesh is rendered double-sided without requiring two material passes:
+
+```csharp
+for (int i = 0; i + 2 < positions.Count; i += 3)
+{
+    int b = geometry.Positions.Count;
+    geometry.Positions.Add(positions[i].ToPoint3D());
+    geometry.Positions.Add(positions[i + 1].ToPoint3D());
+    geometry.Positions.Add(positions[i + 2].ToPoint3D());
+    geometry.TriangleIndices.Add(b); geometry.TriangleIndices.Add(b+1); geometry.TriangleIndices.Add(b+2); // front
+    geometry.TriangleIndices.Add(b+2); geometry.TriangleIndices.Add(b+1); geometry.TriangleIndices.Add(b);  // back
+}
+visual.Content = new GeometryModel3D(geometry, material) { BackMaterial = material };
+```
+
 ---
 
 ## 8. Serialization
@@ -856,8 +908,8 @@ public class SphereEntityRenderer : IEntityRenderer
 
 ```json
 {
-  "formatVersion": "1.1",
-  "createdWith": "GeoModeler3D 1.1",
+  "formatVersion": "1.2",
+  "createdWith": "GeoModeler3D 1.2",
   "camera": {
     "position": [10.0, 10.0, 10.0],
     "lookDirection": [-1.0, -1.0, -1.0],
@@ -882,6 +934,15 @@ public class SphereEntityRenderer : IEntityRenderer
         "baseRadius": 3.0,
         "height": 8.0
       }
+    },
+    {
+      "type": "Mesh",
+      "id": "d4e5f6a7-...",
+      "name": "bracket",
+      "color": "#00FFFF",
+      "isVisible": true,
+      "layer": "Default",
+      "positions": [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0]
     },
     {
       "type": "CuttingPlane",
@@ -978,6 +1039,7 @@ services.AddSingleton<EntitySerializerRegistry>(sp => {
     registry.Register("Torus", new TorusEntitySerializerFactory());
     registry.Register("CuttingPlane", new CuttingPlaneEntitySerializerFactory());
     registry.Register("ContourCurve", new ContourCurveEntitySerializerFactory());
+    registry.Register("Mesh", new MeshEntitySerializerFactory());
     return registry;
 });
 
@@ -985,6 +1047,7 @@ services.AddSingleton<EntitySerializerRegistry>(sp => {
 services.AddTransient<IFileImporter, CsvPointCloudImporter>();
 services.AddTransient<IFileImporter, StlImporter>();
 services.AddTransient<IFileImporter, ObjImporter>();
+services.AddTransient<IFileImporter, WrlImporter>();
 services.AddTransient<IFileImporter, PlyImporter>();
 services.AddTransient<IFileExporter, StlExporter>();
 services.AddTransient<IFileExporter, ObjExporter>();
@@ -1007,6 +1070,7 @@ services.AddSingleton<EntityRendererRegistry>(sp => {
     registry.Register(new TorusEntityRenderer());
     registry.Register(new CuttingPlaneEntityRenderer());
     registry.Register(new ContourCurveEntityRenderer());
+    registry.Register(new MeshEntityRenderer());
     return registry;
 });
 
@@ -1053,6 +1117,7 @@ public interface IEntityVisitor
     void Visit(CylinderEntity entity);
     void Visit(ConeEntity entity);
     void Visit(TorusEntity entity);
+    void Visit(MeshEntity entity);
     void Visit(CuttingPlaneEntity entity);
     void Visit(ContourCurveEntity entity);
 }
@@ -1181,7 +1246,63 @@ flowchart LR
 
 ---
 
-## 12. Concurrency and Threading Model
+## 12. Mesh Import Data Flow
+
+### 12.1 Import Architecture
+
+Mesh importers (`StlImporter`, `ObjImporter`, `WrlImporter`) are stateless classes implementing `IFileImporter`. They are instantiated inline in `MainViewModel.ImportMesh()` — no DI registration is needed for them. Each importer returns `IReadOnlyList<IGeometricEntity>` (a list of `TriangleEntity` objects). `MainViewModel` then consolidates these into a single `MeshEntity`.
+
+```
+File > Import Mesh... (Ctrl+I)
+  →  IFileDialogService.ShowOpenFileDialog(filter: "*.stl;*.obj;*.wrl")
+  →  switch (Path.GetExtension(path).ToLowerInvariant())
+       ".stl"  →  new StlImporter()
+       ".obj"  →  new ObjImporter()
+       ".wrl"  →  new WrlImporter()
+  →  importer.Validate(path)
+       on failure: IDialogService.ShowError(validationResult.ErrorMessage)  →  return
+  →  importer.Import(path)  →  IReadOnlyList<IGeometricEntity>   (TriangleEntity list)
+       on exception: IDialogService.ShowError(ex.Message)  →  return
+  →  entities.OfType<TriangleEntity>()
+       .SelectMany(t => [t.Vertex0, t.Vertex1, t.Vertex2])
+       .ToArray()
+       →  new MeshEntity(positions, meshName: Path.GetFileNameWithoutExtension(path))
+  →  new CreateEntityCommand(_sceneManager, meshEntity)
+  →  _undoManager.Execute(cmd)           ← single undo step removes entire mesh
+  →  StatusText = $"Imported {N} triangles from {filename}"
+```
+
+### 12.2 STL Format Detection
+
+`StlImporter` uses a two-step heuristic to distinguish ASCII from binary STL without relying on the file extension alone:
+
+1. Check whether the first non-whitespace characters match `solid`.
+2. Cross-check against the binary size formula: `file.Length == 84 + triangleCount × 50` (where `triangleCount` is the `uint32` at byte offset 80). If the size matches binary, treat as binary even if `solid` prefix is present (some ASCII writers omit it; some binary writers include a `solid` string in the 80-byte header).
+
+### 12.3 OBJ Face Handling
+
+OBJ face indices are 1-based and may reference vertices relatively (negative index = offset from end of current vertex list). `ObjImporter` resolves indices as follows:
+
+```
+int ResolveIndex(int raw, int vertexCount)
+    => raw > 0 ? raw - 1 : vertexCount + raw;
+```
+
+N-gon faces (more than 3 vertices) are fan-triangulated: `(v[0], v[i], v[i+1])` for `i` in `[1 .. faceCount-2]`.
+
+### 12.4 VRML 2.0 (WRL) Parsing
+
+`WrlImporter` parses only `IndexedFaceSet` nodes. The strategy is purely string-based (no regex engine, no external library):
+
+1. Scan for `IndexedFaceSet` keyword.
+2. Extract the balanced-brace block `{...}` using a depth counter.
+3. Within the block, extract the `point [...]` sub-array for vertex coordinates.
+4. Extract the `coordIndex [...]` sub-array; faces are sequences of indices terminated by `-1`.
+5. Fan-triangulate each face and emit one `TriangleEntity` per triangle.
+
+---
+
+## 14. Concurrency and Threading Model
 
 The application uses a **single UI thread** model consistent with WPF. Key threading rules:
 
@@ -1193,7 +1314,7 @@ The application uses a **single UI thread** model consistent with WPF. Key threa
 
 ---
 
-## 13. Error Handling Strategy
+## 15. Error Handling Strategy
 
 All operations follow a consistent error flow:
 
@@ -1204,7 +1325,7 @@ All operations follow a consistent error flow:
 
 ---
 
-## 14. Extension Checklist
+## 16. Extension Checklist
 
 When adding a new entity type, follow this checklist:
 
