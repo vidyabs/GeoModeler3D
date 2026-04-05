@@ -1,6 +1,6 @@
 # GeoModeler3D
 
-A 3D geometry modeler built with C# / WPF and HelixToolkit. Designed for interactive creation, inspection, and manipulation of fundamental geometric primitives — useful for point-cloud diagnostics, mesh inspection, and geometric education.
+A 3D geometry modeler built with C# / WPF and HelixToolkit. Designed for interactive creation, inspection, and manipulation of fundamental geometric primitives — useful for point-cloud diagnostics, mesh inspection, and geometric education. 
 
 ---
 
@@ -92,3 +92,9 @@ Class diagrams and UML are authored in [Mermaid](https://mermaid.live/).
 - **Option 1**: Install the Mermaid preview extension in VS Code
 - **Option 2**: Use the online editor at https://mermaid.live/
 - **Option 3 (CLI)**: `npm i -g @mermaid-js/mermaid-cli` then `mmdc -i docs/diagram.mmd -o docs/diagram.svg`
+
+
+# Prompts
+Build an implementation plan based on the requirement and architecture diagram so that a simple demo ready code exists. I will use Visual Studio 2026 and .Net 10 to build and run.
+
+Add new feature that allows to import triangulation of various open formats like .stl, .obj and .wrl. show the triangulation as single entity in the list. When selected show the property: number of triangles. Allow to save the triangulation as part of serialisation. support desrialisation of triangulation. Support both ascii and binary format, if valid. create implementation plan.
