@@ -70,6 +70,8 @@ public partial class App : Application
             registry.Register(new CircleEntityRenderer());
             registry.Register(new TriangleEntityRenderer());
             registry.Register(new MeshEntityRenderer());
+            registry.Register(new VectorEntityRenderer());
+            registry.Register(new PlaneEntityRenderer());
             registry.Register(new CuttingPlaneEntityRenderer());
             registry.Register(new ContourCurveEntityRenderer());
             return registry;

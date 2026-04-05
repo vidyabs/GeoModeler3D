@@ -130,6 +130,44 @@ public partial class MainWindow : Window
             ViewModel.CreateTriangleCommand.Execute(dialog.Result);
     }
 
+    private void OnCreateVector(object sender, RoutedEventArgs e)
+    {
+        var sm = ViewModel.SelectionManager;
+        var scene = ViewModel.SceneManager;
+
+        var selectedPoints = sm.SelectedIds
+            .Select(id => scene.GetById(id))
+            .OfType<PointEntity>()
+            .Take(2)
+            .ToList();
+
+        var p0 = selectedPoints.Count > 0 ? selectedPoints[0] : null;
+        var p1 = selectedPoints.Count > 1 ? selectedPoints[1] : null;
+
+        var dialog = new CreateVectorDialog(p0, p1) { Owner = this };
+        if (dialog.ShowDialog() == true)
+            ViewModel.CreateVectorCommand.Execute(dialog.Result);
+    }
+
+    private void OnCreatePlane(object sender, RoutedEventArgs e)
+    {
+        var sm = ViewModel.SelectionManager;
+        var scene = ViewModel.SceneManager;
+
+        var point = sm.SelectedIds
+            .Select(id => scene.GetById(id))
+            .OfType<PointEntity>()
+            .FirstOrDefault();
+        var vector = sm.SelectedIds
+            .Select(id => scene.GetById(id))
+            .OfType<VectorEntity>()
+            .FirstOrDefault();
+
+        var dialog = new CreatePlaneDialog(point, vector) { Owner = this };
+        if (dialog.ShowDialog() == true)
+            ViewModel.CreatePlaneCommand.Execute(dialog.Result);
+    }
+
     // Menu: View
     private void OnZoomToFit(object sender, RoutedEventArgs e) => _viewportManager?.ZoomToFit();
 

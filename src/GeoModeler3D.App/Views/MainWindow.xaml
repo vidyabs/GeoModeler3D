@@ -49,6 +49,9 @@
                 <MenuItem Header="_Point..." Click="OnCreatePoint"/>
                 <Separator/>
                 <MenuItem Header="_Triangle from 3 Points..." Click="OnCreateTriangle"/>
+                <Separator/>
+                <MenuItem Header="Create _Vector..." Click="OnCreateVector"/>
+                <MenuItem Header="Create _Plane..." Click="OnCreatePlane"/>
             </MenuItem>
             <MenuItem Header="_View">
                 <MenuItem Header="Zoom to _Fit" Click="OnZoomToFit"/>

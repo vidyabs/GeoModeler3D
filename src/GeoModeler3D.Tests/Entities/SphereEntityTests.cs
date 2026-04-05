@@ -97,6 +97,8 @@ public class SphereEntityTests
         public void Visit(ConeEntity entity) => VisitedType = nameof(ConeEntity);
         public void Visit(TorusEntity entity) => VisitedType = nameof(TorusEntity);
         public void Visit(MeshEntity entity) => VisitedType = nameof(MeshEntity);
+        public void Visit(VectorEntity entity) => VisitedType = nameof(VectorEntity);
+        public void Visit(PlaneEntity entity) => VisitedType = nameof(PlaneEntity);
         public void Visit(CuttingPlaneEntity entity) => VisitedType = nameof(CuttingPlaneEntity);
         public void Visit(ContourCurveEntity entity) => VisitedType = nameof(ContourCurveEntity);
     }

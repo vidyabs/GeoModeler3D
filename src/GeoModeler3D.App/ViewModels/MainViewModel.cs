@@ -234,6 +234,24 @@ public partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private void CreateVector(VectorCreationParams? p)
+    {
+        if (p is null) return;
+        var entity = new VectorEntity(p.Origin, p.Direction);
+        _undoManager.Execute(new CreateEntityCommand(_sceneManager, entity));
+        StatusText = "Created Vector";
+    }
+
+    [RelayCommand]
+    private void CreatePlane(PlaneCreationParams? p)
+    {
+        if (p is null) return;
+        var entity = new PlaneEntity(p.Origin, p.Normal);
+        _undoManager.Execute(new CreateEntityCommand(_sceneManager, entity));
+        StatusText = "Created Plane";
+    }
+
+    [RelayCommand]
     private void ImportMesh()
     {
         const string filter =
@@ -325,3 +343,5 @@ public record ConeCreationParams(Vector3 BaseCenter, Vector3 Axis, double BaseRa
 public record TorusCreationParams(Vector3 Center, Vector3 Normal, double MajorRadius, double MinorRadius);
 public record PointCreationParams(Vector3 Position);
 public record TriangleCreationParams(Vector3 V0, Vector3 V1, Vector3 V2);
+public record VectorCreationParams(Vector3 Origin, Vector3 Direction);
+public record PlaneCreationParams(Vector3 Origin, Vector3 Normal);

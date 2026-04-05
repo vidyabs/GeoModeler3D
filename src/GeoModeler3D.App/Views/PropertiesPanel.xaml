@@ -373,6 +373,118 @@
             </StackPanel>
         </DataTemplate>
 
+        <!-- Vector -->
+        <DataTemplate DataType="{x:Type entities:VectorEntity}">
+            <StackPanel>
+                <TextBlock Text="Origin" Style="{StaticResource SectionHeader}"/>
+                <Grid Margin="0,2"><Grid.ColumnDefinitions><ColumnDefinition Width="70"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <TextBlock Text="X" Style="{StaticResource PropLabel}"/>
+                    <TextBox Grid.Column="1" Tag="Origin.X"
+                             Text="{Binding Origin, Converter={StaticResource Vec3Comp}, ConverterParameter=X, Mode=OneWay}"
+                             Style="{StaticResource EditBox}"
+                             LostFocus="OnEditLostFocus" KeyDown="OnEditKeyDown"/>
+                </Grid>
+                <Grid Margin="0,2"><Grid.ColumnDefinitions><ColumnDefinition Width="70"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <TextBlock Text="Y" Style="{StaticResource PropLabel}"/>
+                    <TextBox Grid.Column="1" Tag="Origin.Y"
+                             Text="{Binding Origin, Converter={StaticResource Vec3Comp}, ConverterParameter=Y, Mode=OneWay}"
+                             Style="{StaticResource EditBox}"
+                             LostFocus="OnEditLostFocus" KeyDown="OnEditKeyDown"/>
+                </Grid>
+                <Grid Margin="0,2"><Grid.ColumnDefinitions><ColumnDefinition Width="70"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <TextBlock Text="Z" Style="{StaticResource PropLabel}"/>
+                    <TextBox Grid.Column="1" Tag="Origin.Z"
+                             Text="{Binding Origin, Converter={StaticResource Vec3Comp}, ConverterParameter=Z, Mode=OneWay}"
+                             Style="{StaticResource EditBox}"
+                             LostFocus="OnEditLostFocus" KeyDown="OnEditKeyDown"/>
+                </Grid>
+                <TextBlock Text="Direction" Style="{StaticResource SectionHeader}"/>
+                <Grid Margin="0,2"><Grid.ColumnDefinitions><ColumnDefinition Width="70"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <TextBlock Text="I" Style="{StaticResource PropLabel}"/>
+                    <TextBox Grid.Column="1" Tag="Direction.X"
+                             Text="{Binding Direction, Converter={StaticResource Vec3Comp}, ConverterParameter=X, Mode=OneWay}"
+                             Style="{StaticResource EditBox}"
+                             LostFocus="OnEditLostFocus" KeyDown="OnEditKeyDown"/>
+                </Grid>
+                <Grid Margin="0,2"><Grid.ColumnDefinitions><ColumnDefinition Width="70"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <TextBlock Text="J" Style="{StaticResource PropLabel}"/>
+                    <TextBox Grid.Column="1" Tag="Direction.Y"
+                             Text="{Binding Direction, Converter={StaticResource Vec3Comp}, ConverterParameter=Y, Mode=OneWay}"
+                             Style="{StaticResource EditBox}"
+                             LostFocus="OnEditLostFocus" KeyDown="OnEditKeyDown"/>
+                </Grid>
+                <Grid Margin="0,2"><Grid.ColumnDefinitions><ColumnDefinition Width="70"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <TextBlock Text="K" Style="{StaticResource PropLabel}"/>
+                    <TextBox Grid.Column="1" Tag="Direction.Z"
+                             Text="{Binding Direction, Converter={StaticResource Vec3Comp}, ConverterParameter=Z, Mode=OneWay}"
+                             Style="{StaticResource EditBox}"
+                             LostFocus="OnEditLostFocus" KeyDown="OnEditKeyDown"/>
+                </Grid>
+                <TextBlock Text="Computed" Style="{StaticResource SectionHeader}"/>
+                <Grid Margin="0,2"><Grid.ColumnDefinitions><ColumnDefinition Width="70"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <TextBlock Text="Magnitude" Style="{StaticResource PropLabel}"/>
+                    <TextBlock Grid.Column="1" Text="{Binding Magnitude, StringFormat=F4}" Style="{StaticResource PropValue}"/>
+                </Grid>
+            </StackPanel>
+        </DataTemplate>
+
+        <!-- Plane -->
+        <DataTemplate DataType="{x:Type entities:PlaneEntity}">
+            <StackPanel>
+                <TextBlock Text="Origin" Style="{StaticResource SectionHeader}"/>
+                <Grid Margin="0,2"><Grid.ColumnDefinitions><ColumnDefinition Width="70"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <TextBlock Text="X" Style="{StaticResource PropLabel}"/>
+                    <TextBox Grid.Column="1" Tag="Origin.X"
+                             Text="{Binding Origin, Converter={StaticResource Vec3Comp}, ConverterParameter=X, Mode=OneWay}"
+                             Style="{StaticResource EditBox}"
+                             LostFocus="OnEditLostFocus" KeyDown="OnEditKeyDown"/>
+                </Grid>
+                <Grid Margin="0,2"><Grid.ColumnDefinitions><ColumnDefinition Width="70"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <TextBlock Text="Y" Style="{StaticResource PropLabel}"/>
+                    <TextBox Grid.Column="1" Tag="Origin.Y"
+                             Text="{Binding Origin, Converter={StaticResource Vec3Comp}, ConverterParameter=Y, Mode=OneWay}"
+                             Style="{StaticResource EditBox}"
+                             LostFocus="OnEditLostFocus" KeyDown="OnEditKeyDown"/>
+                </Grid>
+                <Grid Margin="0,2"><Grid.ColumnDefinitions><ColumnDefinition Width="70"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <TextBlock Text="Z" Style="{StaticResource PropLabel}"/>
+                    <TextBox Grid.Column="1" Tag="Origin.Z"
+                             Text="{Binding Origin, Converter={StaticResource Vec3Comp}, ConverterParameter=Z, Mode=OneWay}"
+                             Style="{StaticResource EditBox}"
+                             LostFocus="OnEditLostFocus" KeyDown="OnEditKeyDown"/>
+                </Grid>
+                <TextBlock Text="Normal" Style="{StaticResource SectionHeader}"/>
+                <Grid Margin="0,2"><Grid.ColumnDefinitions><ColumnDefinition Width="70"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <TextBlock Text="I" Style="{StaticResource PropLabel}"/>
+                    <TextBox Grid.Column="1" Tag="Normal.X"
+                             Text="{Binding Normal, Converter={StaticResource Vec3Comp}, ConverterParameter=X, Mode=OneWay}"
+                             Style="{StaticResource EditBox}"
+                             LostFocus="OnEditLostFocus" KeyDown="OnEditKeyDown"/>
+                </Grid>
+                <Grid Margin="0,2"><Grid.ColumnDefinitions><ColumnDefinition Width="70"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <TextBlock Text="J" Style="{StaticResource PropLabel}"/>
+                    <TextBox Grid.Column="1" Tag="Normal.Y"
+                             Text="{Binding Normal, Converter={StaticResource Vec3Comp}, ConverterParameter=Y, Mode=OneWay}"
+                             Style="{StaticResource EditBox}"
+                             LostFocus="OnEditLostFocus" KeyDown="OnEditKeyDown"/>
+                </Grid>
+                <Grid Margin="0,2"><Grid.ColumnDefinitions><ColumnDefinition Width="70"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <TextBlock Text="K" Style="{StaticResource PropLabel}"/>
+                    <TextBox Grid.Column="1" Tag="Normal.Z"
+                             Text="{Binding Normal, Converter={StaticResource Vec3Comp}, ConverterParameter=Z, Mode=OneWay}"
+                             Style="{StaticResource EditBox}"
+                             LostFocus="OnEditLostFocus" KeyDown="OnEditKeyDown"/>
+                </Grid>
+                <Grid Margin="0,8,0,2"><Grid.ColumnDefinitions><ColumnDefinition Width="70"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <TextBlock Text="Display Size" Style="{StaticResource PropLabel}"/>
+                    <TextBox Grid.Column="1" Tag="DisplaySize"
+                             Text="{Binding DisplaySize, StringFormat=F3, Mode=OneWay}"
+                             Style="{StaticResource EditBox}"
+                             LostFocus="OnEditLostFocus" KeyDown="OnEditKeyDown"/>
+                </Grid>
+            </StackPanel>
+        </DataTemplate>
+
     </UserControl.Resources>
 
     <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="8">

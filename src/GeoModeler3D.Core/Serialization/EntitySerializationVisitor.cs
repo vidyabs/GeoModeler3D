@@ -92,6 +92,21 @@ public class EntitySerializationVisitor : IEntityVisitor
             .ToList();
     }
 
+    public void Visit(VectorEntity entity)
+    {
+        SetCommon(entity, "Vector");
+        Result["origin"] = Vec3(entity.Origin);
+        Result["direction"] = Vec3(entity.Direction);
+    }
+
+    public void Visit(PlaneEntity entity)
+    {
+        SetCommon(entity, "Plane");
+        Result["origin"] = Vec3(entity.Origin);
+        Result["normal"] = Vec3(entity.Normal);
+        Result["displaySize"] = entity.DisplaySize;
+    }
+
     public void Visit(CuttingPlaneEntity entity)
     {
         SetCommon(entity, "CuttingPlane");
