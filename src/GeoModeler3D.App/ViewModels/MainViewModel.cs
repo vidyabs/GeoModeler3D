@@ -252,6 +252,24 @@ public partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private void CreateCuttingPlane(CuttingPlaneCreationParams? p)
+    {
+        if (p is null) return;
+        var entity = new CuttingPlaneEntity(p.Origin, p.Normal)
+        {
+            DisplayWidth = p.DisplayWidth,
+            DisplayHeight = p.DisplayHeight,
+            Opacity = p.Opacity,
+            IsCappingEnabled = p.IsCappingEnabled,
+            ClipSide = p.ClipSide,
+            GapDistance = p.GapDistance
+        };
+        entity.TargetEntityIds.AddRange(p.TargetEntityIds);
+        _undoManager.Execute(new CreateEntityCommand(_sceneManager, entity));
+        StatusText = "Created Cutting Plane";
+    }
+
+    [RelayCommand]
     private void ImportMesh()
     {
         const string filter =
@@ -345,3 +363,4 @@ public record PointCreationParams(Vector3 Position);
 public record TriangleCreationParams(Vector3 V0, Vector3 V1, Vector3 V2);
 public record VectorCreationParams(Vector3 Origin, Vector3 Direction);
 public record PlaneCreationParams(Vector3 Origin, Vector3 Normal);
+public record CuttingPlaneCreationParams(Vector3 Origin, Vector3 Normal, double DisplayWidth, double DisplayHeight, double Opacity, bool IsCappingEnabled, ClipSide ClipSide, double GapDistance, List<Guid> TargetEntityIds);

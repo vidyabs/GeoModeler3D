@@ -77,6 +77,7 @@ public partial class App : Application
             return registry;
         });
         services.AddSingleton<SelectionHighlighter>();
+        services.AddSingleton<CuttingPlaneVisualizer>();
         services.AddSingleton<IRenderingService, RenderingService>();
         services.AddSingleton<ViewportManager>();
 

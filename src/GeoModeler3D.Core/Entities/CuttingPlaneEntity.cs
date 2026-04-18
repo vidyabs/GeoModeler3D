@@ -11,6 +11,8 @@ public class CuttingPlaneEntity : EntityBase
     private double _displayHeight = 10.0;
     private double _opacity = 0.3;
     private bool _isCappingEnabled;
+    private ClipSide _clipSide;
+    private double _gapDistance = 0.5;
 
     public CuttingPlaneEntity(Vector3 origin, Vector3 normal,
         string name = "CuttingPlane", EntityColor? color = null)
@@ -58,6 +60,18 @@ public class CuttingPlaneEntity : EntityBase
         set => SetField(ref _isCappingEnabled, value);
     }
 
+    public ClipSide ClipSide
+    {
+        get => _clipSide;
+        set => SetField(ref _clipSide, value);
+    }
+
+    public double GapDistance
+    {
+        get => _gapDistance;
+        set => SetField(ref _gapDistance, value);
+    }
+
     public override void Transform(Matrix4x4 matrix)
     {
         Origin = Vector3.Transform(_origin, matrix);
@@ -71,7 +85,9 @@ public class CuttingPlaneEntity : EntityBase
             DisplayWidth = _displayWidth,
             DisplayHeight = _displayHeight,
             Opacity = _opacity,
-            IsCappingEnabled = _isCappingEnabled
+            IsCappingEnabled = _isCappingEnabled,
+            ClipSide = _clipSide,
+            GapDistance = _gapDistance
         };
         clone.TargetEntityIds.AddRange(TargetEntityIds);
         CopyMetadataTo(clone);

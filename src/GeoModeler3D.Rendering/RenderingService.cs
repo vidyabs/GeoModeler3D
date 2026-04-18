@@ -12,20 +12,26 @@ public class RenderingService : IRenderingService
 {
     private readonly EntityRendererRegistry _rendererRegistry;
     private readonly SelectionHighlighter _highlighter;
+    private readonly CuttingPlaneVisualizer _cuttingPlaneVisualizer;
     private HelixViewport3D? _viewport;
 
     private readonly Dictionary<Guid, Visual3D> _entityVisuals = new();
     private readonly Dictionary<Visual3D, Guid> _visualToEntity = new();
 
-    public RenderingService(EntityRendererRegistry rendererRegistry, SelectionHighlighter highlighter)
+    public RenderingService(
+        EntityRendererRegistry rendererRegistry,
+        SelectionHighlighter highlighter,
+        CuttingPlaneVisualizer cuttingPlaneVisualizer)
     {
         _rendererRegistry = rendererRegistry;
         _highlighter = highlighter;
+        _cuttingPlaneVisualizer = cuttingPlaneVisualizer;
     }
 
     public void Initialize(HelixViewport3D viewport)
     {
         _viewport = viewport;
+        _cuttingPlaneVisualizer.Initialize(viewport, _entityVisuals, _rendererRegistry);
     }
 
     public void AddEntity(IGeometricEntity entity)
@@ -41,6 +47,11 @@ public class RenderingService : IRenderingService
         _entityVisuals[entity.Id] = visual;
         _visualToEntity[visual] = entity.Id;
         _viewport.Children.Add(visual);
+
+        if (entity is CuttingPlaneEntity cp)
+            _cuttingPlaneVisualizer.Sync(cp);
+        else
+            _cuttingPlaneVisualizer.OnEntityAdded(entity.Id);
     }
 
     public void UpdateEntity(IGeometricEntity entity)
@@ -48,7 +59,6 @@ public class RenderingService : IRenderingService
         if (!_entityVisuals.TryGetValue(entity.Id, out var visual)) return;
         if (!_rendererRegistry.HasRenderer(entity.GetType())) return;
 
-        // Handle visibility: ModelVisual3D has no Visibility property, so null the Content to hide.
         if (!entity.IsVisible)
         {
             if (visual is ModelVisual3D mv) mv.Content = null;
@@ -57,6 +67,11 @@ public class RenderingService : IRenderingService
 
         var renderer = _rendererRegistry.GetRenderer(entity.GetType());
         renderer.UpdateVisual(entity, visual);
+
+        if (entity is CuttingPlaneEntity cp)
+            _cuttingPlaneVisualizer.Sync(cp);
+        else
+            _cuttingPlaneVisualizer.OnEntityVisualUpdated(entity);
     }
 
     public void RemoveEntity(Guid entityId)
@@ -65,10 +80,9 @@ public class RenderingService : IRenderingService
 
         _highlighter.RemoveHighlight(entityId, visual);
 
-        if (_rendererRegistry.HasRenderer(visual.GetType()))
-        {
-            // best-effort dispose
-        }
+        // Notify visualizer first: removes visual from any clip groups
+        _cuttingPlaneVisualizer.OnEntityRemoved(entityId);
+        _cuttingPlaneVisualizer.Remove(entityId); // no-op if not a cutting plane
 
         _viewport?.Children.Remove(visual);
         _entityVisuals.Remove(entityId);
@@ -102,7 +116,6 @@ public class RenderingService : IRenderingService
 
     public Guid? GetEntityIdFromVisual(Visual3D visual)
     {
-        // Walk up the visual tree to find a registered visual
         Visual3D? current = visual;
         while (current != null)
         {

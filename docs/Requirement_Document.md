@@ -270,6 +270,7 @@ AnimationModel
 ├── RotationTrack : IAnimationTrack              ← interpolates Quaternion orientations
 ├── ScalarTrack : IAnimationTrack                ← interpolates double values (radius, opacity)
 ├── CameraTrack : IAnimationTrack                ← interpolates camera position + look direction
+
 │
 └── EasingType : enum { Linear, EaseIn, EaseOut, EaseInOut, CubicBezier }
 ```

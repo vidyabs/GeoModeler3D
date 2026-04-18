@@ -13,7 +13,11 @@
       "Bash(dotnet build --verbosity quiet)",
       "Bash(dotnet build:*)",
       "Bash(grep -r \"ToggleSelect\\\\|AddToSelection\" /e/Code/GeoModeler3D/src --include=*.cs)",
-      "Bash(dotnet test:*)"
+      "Bash(dotnet test:*)",
+      "Bash(find . -type f -name \"*.cs\" -exec grep -l \"ClipSide\\\\|enum.*Clip\" {} \\\\;)",
+      "Bash(xargs grep *)",
+      "Bash(powershell -command '[Reflection.Assembly]::LoadFile\\('\\\\''C:/Users/Vidyabhushan/.nuget/packages/helixToolkit.wpf/3.1.2/lib/net8.0-windows7.0/HelixToolkit.Wpf.dll'\\\\''\\).GetTypes\\(\\) | Where-Object { $_.Name -like '\\\\''*Cutting*'\\\\'' -or $_.Name -like '\\\\''*Clip*'\\\\'' }')",
+      "Bash(powershell -NoProfile -Command 'Add-Type -Path '\\\\''C:/Users/Vidyabhushan/.nuget/packages/helixToolkit.wpf/3.1.2/lib/net8.0-windows7.0/HelixToolkit.Wpf.dll'\\\\''; [HelixToolkit.Wpf.HelixToolkit].Assembly.GetTypes\\(\\) | Where-Object { $_.Name -match '\\\\''Cutting|Clip|Plane'\\\\'' } | ForEach-Object { $_.FullName }')"
     ]
   }
 }

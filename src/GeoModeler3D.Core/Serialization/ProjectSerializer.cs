@@ -176,6 +176,10 @@ public class ProjectSerializer
         if (e.TryGetProperty("displayHeight", out var dh)) cp.DisplayHeight = dh.GetDouble();
         if (e.TryGetProperty("opacity", out var op)) cp.Opacity = op.GetDouble();
         if (e.TryGetProperty("isCappingEnabled", out var cap)) cp.IsCappingEnabled = cap.GetBoolean();
+        if (e.TryGetProperty("clipSide", out var cs) && cs.ValueKind == JsonValueKind.String
+            && Enum.TryParse<ClipSide>(cs.GetString(), out var clipSide))
+            cp.ClipSide = clipSide;
+        if (e.TryGetProperty("gapDistance", out var gd)) cp.GapDistance = gd.GetDouble();
         if (e.TryGetProperty("targetEntityIds", out var targets))
         {
             foreach (var tid in targets.EnumerateArray())

@@ -116,6 +116,8 @@ public class EntitySerializationVisitor : IEntityVisitor
         Result["displayHeight"] = entity.DisplayHeight;
         Result["opacity"] = entity.Opacity;
         Result["isCappingEnabled"] = entity.IsCappingEnabled;
+        Result["clipSide"] = entity.ClipSide.ToString();
+        Result["gapDistance"] = entity.GapDistance;
         Result["targetEntityIds"] = entity.TargetEntityIds.Select(id => id.ToString()).ToList();
     }
 

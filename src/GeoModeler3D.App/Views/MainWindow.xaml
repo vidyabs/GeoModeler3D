@@ -52,6 +52,7 @@
                 <Separator/>
                 <MenuItem Header="Create _Vector..." Click="OnCreateVector"/>
                 <MenuItem Header="Create _Plane..." Click="OnCreatePlane"/>
+                <MenuItem Header="Create C_utting Plane..." Click="OnCreateCuttingPlane"/>
             </MenuItem>
             <MenuItem Header="_View">
                 <MenuItem Header="Zoom to _Fit" Click="OnZoomToFit"/>

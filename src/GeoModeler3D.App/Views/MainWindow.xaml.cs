@@ -168,6 +168,13 @@ public partial class MainWindow : Window
             ViewModel.CreatePlaneCommand.Execute(dialog.Result);
     }
 
+    private void OnCreateCuttingPlane(object sender, RoutedEventArgs e)
+    {
+        var dialog = new CreateCuttingPlaneDialog(ViewModel.SceneManager.Entities) { Owner = this };
+        if (dialog.ShowDialog() == true)
+            ViewModel.CreateCuttingPlaneCommand.Execute(dialog.Result);
+    }
+
     // Menu: View
     private void OnZoomToFit(object sender, RoutedEventArgs e) => _viewportManager?.ZoomToFit();
 
