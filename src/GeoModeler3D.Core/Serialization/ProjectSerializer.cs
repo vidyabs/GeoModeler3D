@@ -21,6 +21,8 @@ public class ProjectSerializer
 
         foreach (var entity in scene.Entities)
         {
+            // ContourCurveEntity objects are computed at runtime; skip serialization
+            if (entity is ContourCurveEntity) continue;
             entity.Accept(visitor);
             entityList.Add(visitor.Result);
         }

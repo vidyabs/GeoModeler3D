@@ -6,6 +6,7 @@ using GeoModeler3D.Core.Serialization;
 using GeoModeler3D.Rendering;
 using GeoModeler3D.Rendering.EntityRenderers;
 using GeoModeler3D.App.Services;
+using GeoModeler3D.Core.Services;
 using GeoModeler3D.App.ViewModels;
 using GeoModeler3D.App.Views;
 using Serilog;
@@ -44,6 +45,11 @@ public partial class App : Application
         var sceneManager = _serviceProvider.GetRequiredService<SceneManager>();
 
         mainWindow.InitializeServices(renderingService, viewportManager, selectionManager, sceneManager);
+
+        // Instantiate App-layer services to activate their scene/selection subscriptions
+        _ = _serviceProvider.GetRequiredService<ContourUpdateService>();
+        _ = _serviceProvider.GetRequiredService<CappingService>();
+        _ = _serviceProvider.GetRequiredService<ManipulatorService>();
 
         mainWindow.Show();
         Log.Information("GeoModeler3D started successfully");
@@ -84,6 +90,11 @@ public partial class App : Application
         // App services
         services.AddSingleton<IDialogService, DialogService>();
         services.AddSingleton<IFileDialogService, FileDialogService>();
+        services.AddSingleton<ContourExtractionService>();
+        services.AddSingleton<ContourUpdateService>();
+        services.AddSingleton<CappingService>();
+        services.AddSingleton<CuttingPlaneManipulator>();
+        services.AddSingleton<ManipulatorService>();
 
         // ViewModels
         services.AddSingleton<MainViewModel>();

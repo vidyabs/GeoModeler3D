@@ -17,7 +17,18 @@
       "Bash(find . -type f -name \"*.cs\" -exec grep -l \"ClipSide\\\\|enum.*Clip\" {} \\\\;)",
       "Bash(xargs grep *)",
       "Bash(powershell -command '[Reflection.Assembly]::LoadFile\\('\\\\''C:/Users/Vidyabhushan/.nuget/packages/helixToolkit.wpf/3.1.2/lib/net8.0-windows7.0/HelixToolkit.Wpf.dll'\\\\''\\).GetTypes\\(\\) | Where-Object { $_.Name -like '\\\\''*Cutting*'\\\\'' -or $_.Name -like '\\\\''*Clip*'\\\\'' }')",
-      "Bash(powershell -NoProfile -Command 'Add-Type -Path '\\\\''C:/Users/Vidyabhushan/.nuget/packages/helixToolkit.wpf/3.1.2/lib/net8.0-windows7.0/HelixToolkit.Wpf.dll'\\\\''; [HelixToolkit.Wpf.HelixToolkit].Assembly.GetTypes\\(\\) | Where-Object { $_.Name -match '\\\\''Cutting|Clip|Plane'\\\\'' } | ForEach-Object { $_.FullName }')"
+      "Bash(powershell -NoProfile -Command 'Add-Type -Path '\\\\''C:/Users/Vidyabhushan/.nuget/packages/helixToolkit.wpf/3.1.2/lib/net8.0-windows7.0/HelixToolkit.Wpf.dll'\\\\''; [HelixToolkit.Wpf.HelixToolkit].Assembly.GetTypes\\(\\) | Where-Object { $_.Name -match '\\\\''Cutting|Clip|Plane'\\\\'' } | ForEach-Object { $_.FullName }')",
+      "Bash(powershell -Command \"Get-ChildItem 'C:\\\\Users\\\\Vidyabhushan\\\\.nuget\\\\packages\\\\helixtoolkit.wpf\\\\3.1.2\\\\lib\\\\net462' -Filter '*.dll' | Select-Object Name\")",
+      "Bash(powershell -Command \"Get-ChildItem 'C:\\\\Users\\\\Vidyabhushan\\\\.nuget\\\\packages\\\\helixtoolkit.wpf\\\\3.1.2' -Recurse -Filter '*.dll' | Select-Object FullName\")",
+      "Bash(powershell -Command '[System.Reflection.Assembly]::LoadFrom\\('\\\\''C:\\\\Users\\\\Vidyabhushan\\\\.nuget\\\\packages\\\\helixtoolkit.wpf\\\\3.1.2\\\\lib\\\\net8.0-windows7.0\\\\HelixToolkit.Wpf.dll'\\\\''\\).GetTypes\\(\\) | Where-Object { $_.Name -like '\\\\''*Manipulator*'\\\\'' -or $_.Name -like '\\\\''*Gizmo*'\\\\'' } | Select-Object FullName | Sort-Object FullName')",
+      "Bash(powershell -Command 'Add-Type -Path '\\\\''C:\\\\Users\\\\Vidyabhushan\\\\.nuget\\\\packages\\\\helixtoolkit.wpf\\\\3.1.2\\\\lib\\\\net8.0-windows7.0\\\\HelixToolkit.Wpf.dll'\\\\'' -ErrorAction SilentlyContinue; [System.AppDomain]::CurrentDomain.GetAssemblies\\(\\) | Where-Object { $_.GetName\\(\\).Name -eq '\\\\''HelixToolkit.Wpf'\\\\'' } | ForEach-Object { $_.GetTypes\\(\\) } | Where-Object { $_.Name -like '\\\\''*Manipulator*'\\\\'' } | Select-Object FullName')",
+      "Bash(powershell -Command '& { $a = [System.Reflection.Assembly]::LoadFrom\\('\\\\''C:\\\\Users\\\\Vidyabhushan\\\\.nuget\\\\packages\\\\helixtoolkit.wpf\\\\3.1.2\\\\lib\\\\net8.0-windows7.0\\\\HelixToolkit.Wpf.dll'\\\\''\\); try { $types = $a.GetTypes\\(\\) } catch { $types = $_.Exception.Types }; $types | Where-Object { $_ -ne $null -and $_.Name -like '\\\\''*Manipulator*'\\\\'' } | Select-Object FullName }')",
+      "Bash(powershell -Command '& { $a = [System.Reflection.Assembly]::LoadFrom\\('\\\\''C:\\\\Users\\\\Vidyabhushan\\\\.nuget\\\\packages\\\\helixtoolkit.wpf\\\\3.1.2\\\\lib\\\\net8.0-windows7.0\\\\HelixToolkit.Wpf.dll'\\\\''\\); try { $types = $a.GetTypes\\(\\) } catch { $types = $_.Exception.Types }; $types | Where-Object { $_ -ne $null } | Select-Object FullName | Where-Object { $_.FullName -like '\\\\''*Manip*'\\\\'' -or $_.FullName -like '\\\\''*Gizmo*'\\\\'' -or $_.FullName -like '\\\\''*Transform*'\\\\'' } }')",
+      "Bash(powershell -Command '& { $a = [System.Reflection.Assembly]::LoadFrom\\('\\\\''C:\\\\Users\\\\Vidyabhushan\\\\.nuget\\\\packages\\\\helixtoolkit.wpf\\\\3.1.2\\\\lib\\\\net8.0-windows7.0\\\\HelixToolkit.Wpf.dll'\\\\''\\); try { $types = $a.GetTypes\\(\\) } catch { $types = $_.Exception.Types }; $types | Where-Object { $_ -ne $null } | Select-Object -ExpandProperty FullName | Sort-Object | head -60 }')",
+      "WebFetch(domain:github.com)",
+      "WebSearch",
+      "WebFetch(domain:csharp.hotexamples.com)",
+      "WebFetch(domain:helix-toolkit.github.io)"
     ]
   }
 }
